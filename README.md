@@ -13,10 +13,10 @@
 
 
 ### Resources 
-Traffic sign recognitionusing tensor flow tutorial:
+Traffic sign recognition with tensorflow-tutorial:
 https://github.com/waleedka/traffic-signs-tensorflow/blob/master/notebook1.ipynb
 
-Detailed description of the tutorial above:
+More detailed description of the tutorial above:
 https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6#.cu8mczadx
 
 Machine learning/CNN guide:
