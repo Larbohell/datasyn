@@ -165,18 +165,21 @@ for i in range(len(sample_images)):
              fontsize=12, color=color)
     plt.imshow(sample_images[i])
 
-    # Load the test dataset.
-    test_images, test_labels = load_data(test_data_dir)
+# Load the test dataset.
+test_images, test_labels = load_data(test_data_dir)
 
-    # Transform the images, just like we did with the training set.
-    test_images32 = [skimage.transform.resize(image, (32, 32))
-                     for image in test_images]
-    #display_images_and_labels(test_images32, test_labels)
+# Transform the images, just like we did with the training set.
+test_images32 = [skimage.transform.resize(image, (32, 32))
+                 for image in test_images]
+#display_images_and_labels(test_images32, test_labels)
 
-    # Run predictions against the full test set.
-    predicted = session.run([predicted_labels],
-                            feed_dict={images_ph: test_images32})[0]
-    # Calculate how many matches we got.
-    match_count = sum([int(y == y_) for y, y_ in zip(test_labels, predicted)])
-    accuracy = match_count / len(test_labels)
-    print("Accuracy: {:.3f}".format(accuracy))
+# Run predictions against the full test set.
+predicted = session.run([predicted_labels],
+                        feed_dict={images_ph: test_images32})[0]
+# Calculate how many matches we got.
+match_count = sum([int(y == y_) for y, y_ in zip(test_labels, predicted)])
+accuracy = match_count / len(test_labels)
+print("Accuracy: {:.3f}".format(accuracy))
+
+# Close the session. This will destroy the trained model.
+session.close()
