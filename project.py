@@ -152,7 +152,10 @@ predicted = session.run([predicted_labels],
                         feed_dict={images_ph: sample_images})[0]
 
 print(sample_labels)
-print(predicted)
+p = "["
+for i in range(len(predicted)):
+    p += str(predicted[i]) + ", "
+print(p)
 
 # Display the predictions and the ground truth visually.
 fig = plt.figure(figsize=(10, 10))
