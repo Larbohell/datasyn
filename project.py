@@ -150,6 +150,7 @@ sample_labels = [labels[i] for i in sample_indexes]
 # Run the "predicted_labels" op.
 predicted = session.run([predicted_labels],
                         feed_dict={images_ph: sample_images})[0]
+
 print(sample_labels)
 print(predicted)
 
