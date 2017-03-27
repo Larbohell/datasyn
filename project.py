@@ -9,6 +9,9 @@ import tensorflow as tf
 
 from IPython import get_ipython
 
+TRAINING_NUMBER = 11
+TRAINING_TEST_DATA = 2
+
 # Allow image embeding in notebook
 #%matplotlib inline
 
@@ -69,10 +72,21 @@ def display_label_images(images, label):
         plt.imshow(image)
     plt.show()
 
+def save_model(sess, filename, labels):
+    saver = tf.train.Saver()
+    saver.save(sess, filename+"_model")
+    saver.save(labels, filename+"_labels")
+    # `save` method will call `export_meta_graph` implicitly.
+    # you will get saved graph files:my-model.meta
+
+
 # Load training and testing datasets.
 ROOT_PATH = "datasets"
-train_data_dir = os.path.join(ROOT_PATH, "BelgiumTS/Training")
-test_data_dir = os.path.join(ROOT_PATH, "BelgiumTS/Testing")
+directory = "GTSRB"
+if (TRAINING_TEST_DATA == 2):
+    directory = "BelgiumTS"
+train_data_dir = os.path.join(ROOT_PATH, directory+"/Training")
+test_data_dir = os.path.join(ROOT_PATH, directory+"/Testing")
 
 images, labels = load_data(train_data_dir)
 
@@ -136,7 +150,7 @@ session = tf.Session(graph=graph)
 # We don't care about the return value, though. It's None.
 _ = session.run([init])
 
-for i in range(201):
+for i in range(TRAINING_NUMBER):
     _, loss_value = session.run([train, loss],
                                 feed_dict={images_ph: images_a, labels_ph: labels_a})
     if i % 10 == 0:
@@ -162,28 +176,15 @@ fig = plt.figure(figsize=(10, 10))
 for i in range(len(sample_images)):
     truth = sample_labels[i]
     prediction = predicted[i]
-    plt.subplot(5, 2,1+i)
+    plt.subplot(5, 2, 1 + i)
     plt.axis('off')
-    color='green' if truth == prediction else 'red'
+    color = 'green' if truth == prediction else 'red'
     plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction),
              fontsize=12, color=color)
     plt.imshow(sample_images[i])
+plt.show()
 
-# Load the test dataset.
-test_images, test_labels = load_data(test_data_dir)
-
-# Transform the images, just like we did with the training set.
-test_images32 = [skimage.transform.resize(image, (32, 32))
-                 for image in test_images]
-#display_images_and_labels(test_images32, test_labels)
-
-# Run predictions against the full test set.
-predicted = session.run([predicted_labels],
-                        feed_dict={images_ph: test_images32})[0]
-# Calculate how many matches we got.
-match_count = sum([int(y == y_) for y, y_ in zip(test_labels, predicted)])
-accuracy = match_count / len(test_labels)
-print("Accuracy: {:.3f}".format(accuracy))
-
+# Save session
+save_model(session, directory, predicted_labels)
 # Close the session. This will destroy the trained model.
 session.close()
