@@ -39,16 +39,6 @@ def load_data(data_dir):
             labels.append(int(d))
     return images, labels
 
-
-# Load training and testing datasets.
-ROOT_PATH = "datasets"
-train_data_dir = os.path.join(ROOT_PATH, "BelgiumTS/Training")
-test_data_dir = os.path.join(ROOT_PATH, "BelgiumTS/Testing")
-
-images, labels = load_data(train_data_dir)
-
-print("Unique Labels: {0}\nTotal Images: {1}".format(len(set(labels)), len(images)))
-
 def display_images_and_labels(images, labels):
     """Display the first image of each label."""
     unique_labels = set(labels)
@@ -64,9 +54,6 @@ def display_images_and_labels(images, labels):
         _ = plt.imshow(image)
     plt.show()
 
-#display_images_and_labels(images, labels)
-
-
 def display_label_images(images, label):
     """Display images of a specific label."""
     limit = 24  # show a max of 24 images
@@ -81,6 +68,17 @@ def display_label_images(images, label):
         i += 1
         plt.imshow(image)
     plt.show()
+
+# Load training and testing datasets.
+ROOT_PATH = "datasets"
+train_data_dir = os.path.join(ROOT_PATH, "BelgiumTS/Training")
+test_data_dir = os.path.join(ROOT_PATH, "BelgiumTS/Testing")
+
+images, labels = load_data(train_data_dir)
+
+print("Unique Labels: {0}\nTotal Images: {1}".format(len(set(labels)), len(images)))
+
+#display_images_and_labels(images, labels)
 
 #display_label_images(images, 27)
 
