@@ -7,9 +7,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-# Allow image embeding in notebook
-%matplotlib inline
+from IPython import get_ipython
 
+# Allow image embeding in notebook
+#%matplotlib inline
+get_ipython().run_line_magic("matplotlib", "inline")
 
 def load_data(data_dir):
     """Loads a data set and returns two lists:
