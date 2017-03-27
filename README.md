@@ -21,3 +21,6 @@ https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391
 
 Machine learning/CNN guide:
 https://medium.com/@ageitgey/machine-learning-is-fun-part-3-deep-learning-and-convolutional-neural-networks-f40359318721#.r6cklogiy
+
+Walkthrough of tensor flow with small ANN. See task 2 (ML-course assignment 4 - Johan):
+https://drive.google.com/file/d/0B1EcuNVaOt3QeU5xb2xzNUxpSWc/view?usp=sharing
