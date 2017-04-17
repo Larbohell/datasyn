@@ -6,7 +6,7 @@ https://github.com/cheind/TensorBox/tree/develop
 1. `cd tensorbox`
 2. `python train.py --hypes hypes/overfeat_rezoom.json --gpu 0 --logdir output`
 * Evt. `python train.py --hypes hypes/overfeat_rezoom.json --gpu 0 --logdir output --max_iter <max number of iterations>`
-3) 
+3) Evaluation: `python evaluate.py --weights output/overfeat_rezoom_<correct_folder>/save.ckpt-130000 --test_boxes data/brainwash/val_boxes.json`
 
 ## To do
 * Skrive til fil, så nettverket ikke må trenes hver gang
