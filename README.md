@@ -8,6 +8,8 @@ https://github.com/cheind/TensorBox/tree/develop
    1. Evt. `python train.py --hypes hypes/overfeat_rezoom.json --gpu 0 --logdir output --max_iter <max number of iterations>`
 3. Evaluation: `python evaluate.py --weights output/overfeat_rezoom_<correct_folder>/save.ckpt-<numOfIterations> --test_boxes data/brainwash/val_boxes.json`
 
+4. Finn visualisering av evauleringen i output/overfeat_rezoom_<correct_folder>/images_val_boxes<numOfIterations>
+
 ## To do
 * Skrive til fil, så nettverket ikke må trenes hver gang
 
