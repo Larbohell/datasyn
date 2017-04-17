@@ -1,5 +1,12 @@
 # Datasyn-prosjekt
 
+## How-to kjøre object detection med tensorbox
+https://github.com/cheind/TensorBox/tree/develop
+
+1) '''cd tensorbox'''
+2) '''python train.py --hypes hypes/overfeat_rezoom.json --gpu 0 --logdir output'''
+
+
 ## To do
 * Skrive til fil, så nettverket ikke må trenes hver gang
 
