@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Bendik\Documents\Skole\Datasyn\TensorBox\utils\stitch_wrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Bendik\Documents\Skole\Datasyn\TensorBox\utils\stitch_rects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Bendik\Documents\Skole\Datasyn\TensorBox\utils\hungarian\hungarian.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Bendik\Documents\Skole\Datasyn\TensorBox\utils\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\Bendik\Documents\Skole\Datasyn\TensorBox\utils\CMakeFiles\530c848de853a0f5e0e297a04dd32082\stitch_wrapper.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4C04FE5B-C692-3A24-A28C-A32FFAAA9FF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{5D858D96-07E7-3AEE-9863-9FF54A511DF5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

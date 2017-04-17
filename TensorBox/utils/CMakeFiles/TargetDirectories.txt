@@ -1,0 +1,4 @@
+C:/Users/Bendik/Documents/Skole/Datasyn/TensorBox/utils/CMakeFiles/stitch_wrapper.dir
+C:/Users/Bendik/Documents/Skole/Datasyn/TensorBox/utils/CMakeFiles/copy_stitch_wrapper.dir
+C:/Users/Bendik/Documents/Skole/Datasyn/TensorBox/utils/CMakeFiles/ALL_BUILD.dir
+C:/Users/Bendik/Documents/Skole/Datasyn/TensorBox/utils/CMakeFiles/ZERO_CHECK.dir
