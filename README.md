@@ -1,5 +1,16 @@
 # Datasyn-prosjekt
 
+## How-to kjøre object detection med tensorbox
+https://github.com/cheind/TensorBox/tree/develop
+
+1. `cd tensorbox`
+2. `python train.py --hypes hypes/overfeat_rezoom.json --gpu 0 --logdir output`
+   1. Evt. slenge på `--max_iter <max iter>` og `--save_iter <save iter>`
+   2. Hvis prosessen avsluttes med ctrl c får man resultatene fra siste lagringspunkt, gitt av save_iter-variabelen. Default satt til 10
+3. Evaluation: `python evaluate.py --weights output/overfeat_rezoom_<correct_folder>/save.ckpt-<numOfIterations> --test_boxes data/brainwash/val_boxes.json`
+
+4. Finn visualisering av evauleringen i output/overfeat_rezoom_<correct_folder>/images_val_boxes<numOfIterations>
+
 ## To do
 * Skrive til fil, så nettverket ikke må trenes hver gang
 
