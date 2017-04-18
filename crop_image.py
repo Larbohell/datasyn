@@ -10,6 +10,7 @@ def main():
     json_file = open (json_file_path)
     json_string = json_file.read()
     json_data = json.loads(json_string)
+    
     i = 0
 
     for image in json_data:
@@ -32,7 +33,6 @@ def main():
                 new_image.save(cropped_images_location + "/"+str(i)+"_score_"+str(score)+".jpg")
 
                 i+=1
-                
 
 def pad_image_to_square(img):
     longer_side = max(img.size)
