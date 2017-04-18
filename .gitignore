@@ -99,7 +99,5 @@ TensorBox/output/*
 *.swp
 *.so
 TensorBox/inception/*
-TensorBox/hypes/*.json
 
 datasets/*
-#test
