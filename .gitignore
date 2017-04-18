@@ -101,5 +101,5 @@ TensorBox/output/*
 TensorBox/inception/*
 TensorBox/hypes/*.json
 
-datasets/
-output/
+datasets/*
+
