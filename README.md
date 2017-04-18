@@ -3,6 +3,11 @@
 ## How-to kjøre object detection med tensorbox
 https://github.com/cheind/TensorBox/tree/develop
 
+0. Download the correct datasets into TensorBox/data, as well as `inception_v1.ckpt`, from:
+http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
+
+* Ville vært det samme som kjøre `download_data.sh`, som også ville gitt ansikts-datasettet 
+
 1. `cd tensorbox`
 2. `python train.py --hypes hypes/overfeat_rezoom.json --gpu 0 --logdir output`
    1. Evt. slenge på `--max_iter <max iter>` og `--save_iter <save iter>`
