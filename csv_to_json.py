@@ -27,7 +27,7 @@ def main():
                 else:
                     firstBatchWritten = True
 
-                json.dump(jsontmp, jsonfile)
+                json.dump(jsontmp, jsonfile, sort_keys = True)
 
             # Start section for new file
             jsontmp.clear()
@@ -37,15 +37,15 @@ def main():
 
         jsontmp["rects"].append({})
 
-        jsontmp["rects"][i]["x1"] = row["Leftcol"]
-        jsontmp["rects"][i]["x2"] = row["RightCol"]
-        jsontmp["rects"][i]["y1"] = row["TopRow"]
-        jsontmp["rects"][i]["y2"] = row["BottomRow"]
+        jsontmp["rects"][i]["x1"] = float(row["Leftcol"])
+        jsontmp["rects"][i]["x2"] = float(row["RightCol"])
+        jsontmp["rects"][i]["y1"] = float(row["TopRow"])
+        jsontmp["rects"][i]["y2"] = float(row["BottomRow"])
         i += 1
         lastFileName = row["Filename"]
 
     jsonfile.write(",")
-    json.dump(jsontmp, jsonfile)
+    json.dump(jsontmp, jsonfile, sort_keys = True)
     jsonfile.write("]")
 
 main()
