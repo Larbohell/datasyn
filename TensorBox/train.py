@@ -449,7 +449,7 @@ def train(H, test_images):
     (config, loss, accuracy, summary_op, train_op,
      smooth_op, global_step, learning_rate) = build(H, q)
 
-    saver = tf.train.Saver(max_to_keep=1, keep_checkpoint_every_n_hours = 1)
+    saver = tf.train.Saver(max_to_keep=None)
     writer = tf.summary.FileWriter(
         logdir=H['save_dir'],
         flush_secs=10
@@ -494,7 +494,6 @@ def train(H, test_images):
 
             if i % display_iter != 0:
                 # train network
-                print('Training iteration: ', i)
                 batch_loss_train, _ = sess.run([loss['train'], train_op], feed_dict=lr_feed)
             else:
                 # test network every N iterations; log additional info
@@ -534,12 +533,9 @@ def main():
     parser.add_argument('--hypes', required=True, type=str)
     parser.add_argument('--max_iter', required=False, type=int, default=None)
     parser.add_argument('--logdir', default='output', type=str)
-    parser.add_argument('--save_iter', default=10, type=int)
     args = parser.parse_args()
     with open(args.hypes, 'r') as f:
         H = json.load(f)
-    if args.save_iter is not None:
-        H['logging']['save_iter'] = args.save_iter
     if args.gpu is not None:
         H['solver']['gpu'] = args.gpu
     if args.max_iter is not None:

@@ -10,7 +10,7 @@ def main():
     json_file = open (json_file_path)
     json_string = json_file.read()
     json_data = json.loads(json_string)
-    
+
     i = 0
 
     for image in json_data:
