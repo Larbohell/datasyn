@@ -6,6 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+import datetime
 
 from IPython import get_ipython
 
@@ -73,9 +74,13 @@ def display_label_images(images, label):
     plt.show()
 
 def save_model(sess, filename, labels):
+    if not os.path.exists("output"): os.makedirs("output")
+    dirname = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M')
+    os.makedirs(os.path.join("output", filename, dirname))
+
     saver = tf.train.Saver()
-    saver.save(sess, filename+"_model")
-    saver.save(labels, filename+"_labels")
+    saver.save(sess, os.path.abspath(os.path.join("output", filename, dirname, "save")))
+    #saver.save(labels, filename+"_labels")
     # `save` method will call `export_meta_graph` implicitly.
     # you will get saved graph files:my-model.meta
 
@@ -138,53 +143,53 @@ with graph.as_default():
     #init = tf.initialize_all_variables()
     init = tf.global_variables_initializer()
 
-print("images_flat: ", images_flat)
-print("logits: ", logits)
-print("loss: ", loss)
-print("predicted_labels: ", predicted_labels)
+    print("images_flat: ", images_flat)
+    print("logits: ", logits)
+    print("loss: ", loss)
+    print("predicted_labels: ", predicted_labels)
 
-# Create a session to run the graph we created.
-session = tf.Session(graph=graph)
+    # Create a session to run the graph we created.
+    session = tf.Session(graph=graph)
 
-# First step is always to initialize all variables.
-# We don't care about the return value, though. It's None.
-_ = session.run([init])
+    # First step is always to initialize all variables.
+    # We don't care about the return value, though. It's None.
+    _ = session.run([init])
 
-for i in range(TRAINING_NUMBER):
-    _, loss_value = session.run([train, loss],
-                                feed_dict={images_ph: images_a, labels_ph: labels_a})
-    if i % 10 == 0:
-        print("Loss: ", loss_value)
+    for i in range(TRAINING_NUMBER):
+        _, loss_value = session.run([train, loss],
+                                    feed_dict={images_ph: images_a, labels_ph: labels_a})
+        if i % 10 == 0:
+            print("Loss: ", loss_value)
 
-# Pick 10 random images
-sample_indexes = random.sample(range(len(images32)), 10)
-sample_images = [images32[i] for i in sample_indexes]
-sample_labels = [labels[i] for i in sample_indexes]
+    # Pick 10 random images
+    sample_indexes = random.sample(range(len(images32)), 10)
+    sample_images = [images32[i] for i in sample_indexes]
+    sample_labels = [labels[i] for i in sample_indexes]
 
-# Run the "predicted_labels" op.
-predicted = session.run([predicted_labels],
-                        feed_dict={images_ph: sample_images})[0]
+    # Run the "predicted_labels" op.
+    predicted = session.run([predicted_labels],
+                            feed_dict={images_ph: sample_images})[0]
 
-print(sample_labels)
-p = "["
-for i in range(len(predicted)):
-    p += str(predicted[i]) + ", "
-print(p)
+    print(sample_labels)
+    p = "["
+    for i in range(len(predicted)):
+        p += str(predicted[i]) + ", "
+    print(p)
 
-# Display the predictions and the ground truth visually.
-fig = plt.figure(figsize=(10, 10))
-for i in range(len(sample_images)):
-    truth = sample_labels[i]
-    prediction = predicted[i]
-    plt.subplot(5, 2, 1 + i)
-    plt.axis('off')
-    color = 'green' if truth == prediction else 'red'
-    plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction),
-             fontsize=12, color=color)
-    plt.imshow(sample_images[i])
-plt.show()
+    # Display the predictions and the ground truth visually.
+    fig = plt.figure(figsize=(10, 10))
+    for i in range(len(sample_images)):
+        truth = sample_labels[i]
+        prediction = predicted[i]
+        plt.subplot(5, 2, 1 + i)
+        plt.axis('off')
+        color = 'green' if truth == prediction else 'red'
+        plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction),
+                 fontsize=12, color=color)
+        plt.imshow(sample_images[i])
+    plt.show()
 
-# Save session
-save_model(session, directory, predicted_labels)
-# Close the session. This will destroy the trained model.
-session.close()
+    # Save session
+    save_model(session, directory, predicted_labels)
+    # Close the session. This will destroy the trained model.
+    session.close()
