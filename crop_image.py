@@ -32,6 +32,7 @@ def main():
                 new_image.save(cropped_images_location + "/"+str(i)+"_score_"+str(score)+".jpg")
 
                 i+=1
+                
 
 def pad_image_to_square(img):
     longer_side = max(img.size)
