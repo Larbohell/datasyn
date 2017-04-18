@@ -91,3 +91,15 @@ ENV/
 # Johan
 .idea/
 .DS_Store
+
+# TensorBox
+*.pyc
+TensorBox/data/*
+TensorBox/output/*
+*.swp
+*.so
+TensorBox/inception/*
+TensorBox/hypes/*.json
+
+datasets/
+output/
