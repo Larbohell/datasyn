@@ -21,7 +21,8 @@ IMAGE_SCALE_SIZE_Y = 32
 
 def main():
     start_time = time.time()
-    end_time = train()
+    train()
+    end_time = time.time()
     print ("Total time elapsed: ", (end_time-start_time))
 
 # Allow image embeding in notebook
@@ -242,8 +243,6 @@ def train():
         save_model(session, directory, predicted_labels)
         # Close the session. This will destroy the trained model.
         session.close()
-
-        return time.time()
 
 def save_numpy_array_as_image(array, save_dir, filename):
     #Rescale to 0-255 and convert to uint8
