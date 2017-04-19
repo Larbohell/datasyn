@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import datetime
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import glob
 
 from IPython import get_ipython
@@ -16,6 +16,9 @@ TRAINING_NUMBER = 11
 TRAINING_TEST_DATA = 3 #2 = BelgiumTS, 3 = FromTensorBox
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
+
+def main():
+    train()
 
 # Allow image embeding in notebook
 #%matplotlib inline
@@ -47,7 +50,7 @@ def load_train_data(data_dir):
             labels.append(int(d))
     return images, labels
 
-def load_test_data(data_dir):
+def load_test_data_as_numpy_array(data_dir):
     images = []
     for filename in glob.glob(data_dir+"/*.ppm"):
         images.append(skimage.data.imread(filename)) #Loads the images as a list of numpy arrays
@@ -67,7 +70,9 @@ def display_images_and_labels(images, labels):
         plt.title("Label {0} ({1})".format(label, labels.count(label)))
         i += 1
         _ = plt.imshow(image)
-    plt.show()
+    #plt.show()
+    plt.savefig('images_and_corresponding_labels.png')
+
 
 def display_label_images(images, label):
     """Display images of a specific label."""
@@ -96,120 +101,156 @@ def save_model(sess, filename, labels):
     # you will get saved graph files:my-model.meta
 
 
-# Load training and testing datasets.
-ROOT_PATH = "datasets"
-directory = "GTSRB"
-if (TRAINING_TEST_DATA == 2):
-    directory = "BelgiumTS"
+def train():
+    # Load training and testing datasets.
+    ROOT_PATH = "datasets"
+    directory = "GTSRB"
+    if (TRAINING_TEST_DATA == 2):
+        directory = "BelgiumTS"
 
-if (TRAINING_TEST_DATA == 3):
-    directory = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
+    if (TRAINING_TEST_DATA == 3):
+        directory = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
 
-train_data_dir = os.path.join(ROOT_PATH, directory+"/Training")
-test_data_dir = os.path.join(ROOT_PATH, directory+"/Testing")
+    train_data_dir = os.path.join(ROOT_PATH, directory + "/Training")
+    test_data_dir = os.path.join(ROOT_PATH, directory + "/Testing")
 
-train_images, labels = load_train_data(train_data_dir)
-test_images = load_test_data(test_data_dir)
+    train_images, labels = load_train_data(train_data_dir)
+    test_images = load_test_data_as_numpy_array(test_data_dir)
 
-print("Unique Labels: {0}\nTotal Train Images: {1}".format(len(set(labels)), len(train_images)))
-print("\nTotal Test Images: ", len(test_images))
+    print("Unique Labels: {0}\nTotal Train Images: {1}".format(len(set(labels)), len(train_images)))
+    print("Total Test Images: ", len(test_images))
 
-#display_images_and_labels(train_images, labels)
+    # display_images_and_labels(train_images, labels)
 
-#display_label_images(train_images, 27)
+    # display_label_images(train_images, 27)
 
-# Resize images
-train_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
-                for image in train_images]
+    # Resize images
+    train_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
+                      for image in train_images]
 
-test_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
-                for image in test_images]
+    test_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
+                     for image in test_images]
 
-#display_images_and_labels(train_images32, labels)
+    display_images_and_labels(train_images32, labels)
 
-labels_a = np.array(labels)
-train_images_a = np.array(train_images32)
-test_images_a = np.array(test_images32)
-print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape)
+    labels_a = np.array(labels)
+    train_images_a = np.array(train_images32)
+    test_images_a = np.array(test_images32)
+    print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape, "\nTest images: ", test_images_a.shape)
 
-# Create a graph to hold the model.
-graph = tf.Graph()
+    # Create a graph to hold the model.
+    graph = tf.Graph()
 
-# Create model in the graph.
-with graph.as_default():
-    # Placeholders for inputs and labels.
-    images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3])
-    labels_ph = tf.placeholder(tf.int32, [None])
+    # Create model in the graph.
+    with graph.as_default():
+        # Placeholders for inputs and labels.
+        images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3])
+        labels_ph = tf.placeholder(tf.int32, [None])
 
-    # Flatten input from: [None, height, width, channels]
-    # To: [None, height * width * channels] == [None, 3072]
-    images_flat = tf.contrib.layers.flatten(images_ph)
+        # Flatten input from: [None, height, width, channels]
+        # To: [None, height * width * channels] == [None, 3072]
+        images_flat = tf.contrib.layers.flatten(images_ph)
 
-    # Fully connected layer.
-    # Generates logits of size [None, 62]
-    logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu)
+        # Fully connected layer.
+        # Generates logits of size [None, 62]
+        logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu)
 
-    # Convert logits to label indexes (int).
-    # Shape [None], which is a 1D vector of length == batch_size.
-    predicted_labels = tf.argmax(logits, 1)
+        # Convert logits to label indexes (int).
+        # Shape [None], which is a 1D vector of length == batch_size.
+        predicted_labels = tf.argmax(logits, 1)
 
-    # Define the loss function.
-    # Cross-entropy is a good choice for classification.
-    loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph))
+        # Define the loss function.
+        # Cross-entropy is a good choice for classification.
+        loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph))
 
-    # Create training op.
-    train = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
+        # Create training op.
+        train = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
 
-    # And, finally, an initialization op to execute before training.
-    init = tf.global_variables_initializer()
+        # And, finally, an initialization op to execute before training.
+        init = tf.global_variables_initializer()
 
-    print("images_flat: ", images_flat)
-    print("logits: ", logits)
-    print("loss: ", loss)
-    print("predicted_labels: ", predicted_labels)
+        print("images_flat: ", images_flat)
+        print("logits: ", logits)
+        print("loss: ", loss)
+        print("predicted_labels: ", predicted_labels)
 
-    # Create a session to run the graph we created.
-    session = tf.Session(graph=graph)
+        # Create a session to run the graph we created.
+        session = tf.Session(graph=graph)
 
-    # First step is always to initialize all variables.
-    # We don't care about the return value, though. It's None.
-    _ = session.run([init])
+        # First step is always to initialize all variables.
+        # We don't care about the return value, though. It's None.
+        _ = session.run([init])
 
-    for i in range(TRAINING_NUMBER):
-        _, loss_value = session.run([train, loss],
-                                    feed_dict={images_ph: train_images_a, labels_ph: labels_a})
-        if i % 10 == 0:
-            print("Loss: ", loss_value)
+        #The actual training
+        for i in range(TRAINING_NUMBER):
+            _, loss_value = session.run([train, loss],
+                                        feed_dict={images_ph: train_images_a, labels_ph: labels_a})
+            if i % 50 == 0:
+                print("Iter: " + str(i) +", Loss: ", loss_value)
 
-    # Pick 10 random train images
-    sample_indexes = random.sample(range(len(train_images32)), 10)
-    sample_images = [train_images32[i] for i in sample_indexes]
-    sample_labels = [labels[i] for i in sample_indexes]
+        #TESTING
+        predicted_labels = session.run([predicted_labels],
+                                       feed_dict={images_ph: test_images32})[0]
 
-    # Run the "predicted_labels" op.
-    predicted = session.run([predicted_labels],
-                            feed_dict={images_ph: sample_images})[0]
+        #EVALUATING THE TEST
+        save_dir = 'output/' + directory + '/predictions'
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
 
-    print(sample_labels)
-    p = "["
-    for i in range(len(predicted)):
-        p += str(predicted[i]) + ", "
-    print(p)
+        i = 0
 
-    # Display the predictions and the ground truth visually.
-    fig = plt.figure(figsize=(10, 10))
-    for i in range(len(sample_images)):
-        truth = sample_labels[i]
-        prediction = predicted[i]
-        plt.subplot(5, 2, 1 + i)
-        plt.axis('off')
-        color = 'green' if truth == prediction else 'red'
-        plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction),
-                 fontsize=12, color=color)
-        plt.imshow(sample_images[i])
-    plt.show()
+        for pl in predicted_labels:
+            predicted_image = test_images32[i]
+            save_numpy_array_as_image(predicted_image,save_dir,'/label_'+str(pl)+'_'+str(i)+'.png')
+            #p_i.save(save_dir+'/label_'+str(pl)+'_'+str(i)+'.png')
+            i+=1
 
-    # Save session
-    save_model(session, directory, predicted_labels)
-    # Close the session. This will destroy the trained model.
-    session.close()
+        # # Pick 10 random train images
+        # sample_indexes = random.sample(range(len(train_images32)), 10)
+        # sample_images = [train_images32[i] for i in sample_indexes]
+        # sample_labels = [labels[i] for i in sample_indexes]
+        #
+        # # Run the "predicted_labels" op.
+        # predicted = session.run([predicted_labels],
+        #                         feed_dict={images_ph: sample_images})[0]
+        #
+        # print(sample_labels)
+        # p = "["
+        # for i in range(len(predicted)):
+        #     p += str(predicted[i]) + ", "
+        # print(p)
+        #
+        # # Display the predictions and the ground truth visually.
+        # fig = plt.figure(figsize=(10, 10))
+        # for i in range(len(sample_images)):
+        #     truth = sample_labels[i]
+        #     prediction = predicted[i]
+        #     plt.subplot(5, 2, 1 + i)
+        #     plt.axis('off')
+        #     color = 'green' if truth == prediction else 'red'
+        #     plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction),
+        #              fontsize=12, color=color)
+        #     plt.imshow(sample_images[i])
+        # plt.show()
+
+        # Save session
+        save_model(session, directory, predicted_labels)
+        # Close the session. This will destroy the trained model.
+        session.close()
+
+def save_numpy_array_as_image(array, save_dir, filename):
+    #Rescale to 0-255 and convert to uint8
+    rescaled = (255.0 / array.max() * (array - array.min())).astype(np.uint8)
+
+    im = Image.fromarray(rescaled)
+    im.save(save_dir + filename)
+
+
+def draw_on_image(image, label):
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype("arial.ttf", 10)
+    draw.text((0,0), str(label), (255,0,0), font=font)
+
+    return image
+
+main()
