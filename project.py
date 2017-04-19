@@ -10,15 +10,19 @@ import datetime
 from PIL import Image, ImageDraw, ImageFont
 import glob
 
+import time
+
 from IPython import get_ipython
 
-TRAINING_NUMBER = 11
+TRAINING_NUMBER = 30000
 TRAINING_TEST_DATA = 3 #2 = BelgiumTS, 3 = FromTensorBox
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
 def main():
-    train()
+    start_time = time.time()
+    end_time = train()
+    print ("Total time elapsed: ", (end_time-start_time))
 
 # Allow image embeding in notebook
 #%matplotlib inline
@@ -182,11 +186,12 @@ def train():
         _ = session.run([init])
 
         #The actual training
+        start = time.time()
         for i in range(TRAINING_NUMBER):
             _, loss_value = session.run([train, loss],
                                         feed_dict={images_ph: train_images_a, labels_ph: labels_a})
-            if i % 50 == 0:
-                print("Iter: " + str(i) +", Loss: ", loss_value)
+            if i % 1000 == 0:
+                print("Iter: " + str(i) +", Loss: ", loss_value, ", Time elapsed: ", time.time()-start)
 
         #TESTING
         predicted_labels = session.run([predicted_labels],
@@ -237,6 +242,8 @@ def train():
         save_model(session, directory, predicted_labels)
         # Close the session. This will destroy the trained model.
         session.close()
+
+        return time.time()
 
 def save_numpy_array_as_image(array, save_dir, filename):
     #Rescale to 0-255 and convert to uint8
