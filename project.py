@@ -99,22 +99,23 @@ if (TRAINING_TEST_DATA == 3):
 train_data_dir = os.path.join(ROOT_PATH, directory+"/Training")
 test_data_dir = os.path.join(ROOT_PATH, directory+"/Testing")
 
-images, labels = load_data(train_data_dir)
+train_images, labels = load_data(train_data_dir)
+test_images, _ = load_data(test_data_dir)
 
-print("Unique Labels: {0}\nTotal Images: {1}".format(len(set(labels)), len(images)))
+print("Unique Labels: {0}\nTotal Train Images: {1}".format(len(set(labels)), len(train_images)))
 
-#display_images_and_labels(images, labels)
+#display_images_and_labels(train_images, labels)
 
-#display_label_images(images, 27)
+#display_label_images(train_images, 27)
 
 # Resize images
-images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
-                for image in images]
-#display_images_and_labels(images32, labels)
+train_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
+                for image in train_images]
+#display_images_and_labels(train_images32, labels)
 
 labels_a = np.array(labels)
-images_a = np.array(images32)
-print("labels: ", labels_a.shape, "\nimages: ", images_a.shape)
+train_images_a = np.array(train_images32)
+print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape)
 
 # Create a graph to hold the model.
 graph = tf.Graph()
@@ -145,8 +146,6 @@ with graph.as_default():
     train = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
 
     # And, finally, an initialization op to execute before training.
-    # TODO: rename to tf.global_variables_initializer() on TF 0.12.
-    #init = tf.initialize_all_variables()
     init = tf.global_variables_initializer()
 
     print("images_flat: ", images_flat)
@@ -163,13 +162,13 @@ with graph.as_default():
 
     for i in range(TRAINING_NUMBER):
         _, loss_value = session.run([train, loss],
-                                    feed_dict={images_ph: images_a, labels_ph: labels_a})
+                                    feed_dict={images_ph: train_images_a, labels_ph: labels_a})
         if i % 10 == 0:
             print("Loss: ", loss_value)
 
-    # Pick 10 random images
-    sample_indexes = random.sample(range(len(images32)), 10)
-    sample_images = [images32[i] for i in sample_indexes]
+    # Pick 10 random train images
+    sample_indexes = random.sample(range(len(train_images32)), 10)
+    sample_images = [train_images32[i] for i in sample_indexes]
     sample_labels = [labels[i] for i in sample_indexes]
 
     # Run the "predicted_labels" op.
