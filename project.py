@@ -71,7 +71,7 @@ def display_images_and_labels(images, labels):
         i += 1
         _ = plt.imshow(image)
     #plt.show()
-    plt.savefig('images_and_corresponding_labels.png')
+    plt.savefig('labels_and_corresponding_images.png')
 
 
 def display_label_images(images, label):
