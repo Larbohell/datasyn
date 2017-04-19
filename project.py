@@ -11,7 +11,9 @@ import datetime
 from IPython import get_ipython
 
 TRAINING_NUMBER = 11
-TRAINING_TEST_DATA = 2
+TRAINING_TEST_DATA = 3 #2 = BelgiumTS, 3 = FromTensorBox
+IMAGE_SCALE_SIZE_X = 32
+IMAGE_SCALE_SIZE_Y = 32
 
 # Allow image embeding in notebook
 #%matplotlib inline
@@ -90,6 +92,10 @@ ROOT_PATH = "datasets"
 directory = "GTSRB"
 if (TRAINING_TEST_DATA == 2):
     directory = "BelgiumTS"
+
+if (TRAINING_TEST_DATA == 3):
+    directory = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
+
 train_data_dir = os.path.join(ROOT_PATH, directory+"/Training")
 test_data_dir = os.path.join(ROOT_PATH, directory+"/Testing")
 
@@ -102,7 +108,7 @@ print("Unique Labels: {0}\nTotal Images: {1}".format(len(set(labels)), len(image
 #display_label_images(images, 27)
 
 # Resize images
-images32 = [skimage.transform.resize(image, (32, 32))
+images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
                 for image in images]
 #display_images_and_labels(images32, labels)
 
@@ -116,7 +122,7 @@ graph = tf.Graph()
 # Create model in the graph.
 with graph.as_default():
     # Placeholders for inputs and labels.
-    images_ph = tf.placeholder(tf.float32, [None, 32, 32, 3])
+    images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3])
     labels_ph = tf.placeholder(tf.int32, [None])
 
     # Flatten input from: [None, height, width, channels]
