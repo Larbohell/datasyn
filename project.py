@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import datetime
+from PIL import Image
+import glob
 
 from IPython import get_ipython
 
@@ -21,7 +23,7 @@ IMAGE_SCALE_SIZE_Y = 32
 #from IPython import get_ipython
 #get_ipython().run_line_magic('matplotlib', 'inline')
 
-def load_data(data_dir):
+def load_train_data(data_dir):
     """Loads a data set and returns two lists:
 
     images: a list of Numpy arrays, each representing an image.
@@ -44,6 +46,13 @@ def load_data(data_dir):
             images.append(skimage.data.imread(f))
             labels.append(int(d))
     return images, labels
+
+def load_test_data(data_dir):
+    images = []
+    for filename in glob.glob(data_dir+"/*.ppm"):
+        images.append(skimage.data.imread(filename)) #Loads the images as a list of numpy arrays
+
+    return images
 
 def display_images_and_labels(images, labels):
     """Display the first image of each label."""
@@ -99,10 +108,11 @@ if (TRAINING_TEST_DATA == 3):
 train_data_dir = os.path.join(ROOT_PATH, directory+"/Training")
 test_data_dir = os.path.join(ROOT_PATH, directory+"/Testing")
 
-train_images, labels = load_data(train_data_dir)
-test_images, _ = load_data(test_data_dir)
+train_images, labels = load_train_data(train_data_dir)
+test_images = load_test_data(test_data_dir)
 
 print("Unique Labels: {0}\nTotal Train Images: {1}".format(len(set(labels)), len(train_images)))
+print("\nTotal Test Images: ", len(test_images))
 
 #display_images_and_labels(train_images, labels)
 
@@ -111,10 +121,15 @@ print("Unique Labels: {0}\nTotal Train Images: {1}".format(len(set(labels)), len
 # Resize images
 train_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
                 for image in train_images]
+
+test_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
+                for image in test_images]
+
 #display_images_and_labels(train_images32, labels)
 
 labels_a = np.array(labels)
 train_images_a = np.array(train_images32)
+test_images_a = np.array(test_images32)
 print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape)
 
 # Create a graph to hold the model.
