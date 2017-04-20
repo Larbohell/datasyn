@@ -26,6 +26,7 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
 * Klassisk bildesegmentering som input
     * Histogram-equalization
 * Fartsgrenseskilt: Skille mellom forskjellige fartsgrenser, kanskje konvertere bildet -> tall
+* Parallellisere bildesegmentering og skiltklassifisering
 
 
 ### Resources 

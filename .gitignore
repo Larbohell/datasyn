@@ -100,4 +100,4 @@ TensorBox/output/*
 *.so
 TensorBox/inception/*
 
-datasets/BelgiumTS/*
+datasets/*
