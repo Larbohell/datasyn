@@ -14,8 +14,8 @@ import time
 
 from IPython import get_ipython
 
-TRAINING_NUMBER = 30000
-TRAINING_TEST_DATA = 3 #2 = BelgiumTS, 3 = FromTensorBox
+TRAINING_NUMBER = 100
+TRAINING_TEST_DATA = 2 #1 = Training_test_small_set, 2 = BelgiumTS, 3 = FromTensorBox
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
@@ -100,7 +100,7 @@ def save_model(sess, filename, labels):
     os.makedirs(os.path.join("output", filename, dirname))
 
     saver = tf.train.Saver()
-    saver.save(sess, os.path.abspath(os.path.join("output", filename, dirname, "save")))
+    saver.save(sess, os.path.abspath(os.path.join("output", filename, dirname, "save.ckpt")))
     #saver.save(labels, filename+"_labels")
     # `save` method will call `export_meta_graph` implicitly.
     # you will get saved graph files:my-model.meta
@@ -110,6 +110,9 @@ def train():
     # Load training and testing datasets.
     ROOT_PATH = "datasets"
     directory = "GTSRB"
+    if (TRAINING_TEST_DATA == 1):
+        directory = "Training_test_small_set"
+
     if (TRAINING_TEST_DATA == 2):
         directory = "BelgiumTS"
 
@@ -120,7 +123,9 @@ def train():
     test_data_dir = os.path.join(ROOT_PATH, directory + "/Testing")
 
     train_images, labels = load_train_data(train_data_dir)
-    test_images = load_test_data_as_numpy_array(test_data_dir)
+    #test_images = load_test_data_as_numpy_array(test_data_dir)
+
+    test_images, _ = load_train_data(test_data_dir)
 
     print("Unique Labels: {0}\nTotal Train Images: {1}".format(len(set(labels)), len(train_images)))
     print("Total Test Images: ", len(test_images))
@@ -149,7 +154,7 @@ def train():
     # Create model in the graph.
     with graph.as_default():
         # Placeholders for inputs and labels.
-        images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3])
+        images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3], name="images_ph")
         labels_ph = tf.placeholder(tf.int32, [None])
 
         # Flatten input from: [None, height, width, channels]
@@ -159,6 +164,9 @@ def train():
         # Fully connected layer.
         # Generates logits of size [None, 62]
         logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu)
+        #tf.add_to_collection("logits", logits)
+        #print("images_ph: ", images_ph)
+        #tf.add_to_collection("images_ph", images_ph)
 
         # Convert logits to label indexes (int).
         # Shape [None], which is a 1D vector of length == batch_size.
@@ -178,6 +186,7 @@ def train():
         print("logits: ", logits)
         print("loss: ", loss)
         print("predicted_labels: ", predicted_labels)
+        print("images_ph: ", images_ph)
 
         # Create a session to run the graph we created.
         session = tf.Session(graph=graph)
@@ -238,6 +247,11 @@ def train():
         #              fontsize=12, color=color)
         #     plt.imshow(sample_images[i])
         # plt.show()
+
+        print("Saving now...")
+        print("logits: ", logits)
+        print("predicted_labels: ", predicted_labels)
+        print("images_ph: ", images_ph)
 
         # Save session
         save_model(session, directory, predicted_labels)

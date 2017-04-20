@@ -9,7 +9,11 @@ import tensorflow as tf
 from PIL import Image
 
 TRAINING_TEST_DATA = 2
-MODEL_FOLDER_PATH = "BelgiumTS/2017_04_20_13.47" #"BelgiumTS/2017_04_18_17.57"
+MODEL_DIR = "BelgiumTS/2017_04_20_13.47" #"BelgiumTS/2017_04_18_17.57"
+TEST_DATA_SET = "BelgiumTS"
+#TEST_DATA_SET = "GTSRB"
+#TEST_DATA_SET = "Training_test_small_set"
+
 
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
@@ -17,18 +21,14 @@ IMAGE_SCALE_SIZE_Y = 32
 def main():
     # Load training and testing datasets.
     ROOT_PATH = "datasets"
-    directory = "GTSRB"
-    if (TRAINING_TEST_DATA == 2):
-        directory = "BelgiumTS"
-    if (TRAINING_TEST_DATA == 1):
-        directory = "Training_test_small_set"
-    #train_data_dir = os.path.join(ROOT_PATH, directory, "Training")
+    directory = TEST_DATA_SET
     test_data_dir = os.path.join(ROOT_PATH, directory, "Testing")
 
+    # Restore session and variables/nodes/weights
     session = tf.Session()
-    meta_file = os.path.join("output", MODEL_FOLDER_PATH, "save.ckpt.meta")
+    meta_file = os.path.join("output", MODEL_DIR, "save.ckpt.meta")
     new_saver = tf.train.import_meta_graph(meta_file)
-    checkpoint_dir = os.path.join("output", MODEL_FOLDER_PATH)
+    checkpoint_dir = os.path.join("output", MODEL_DIR)
     new_saver.restore(session, tf.train.latest_checkpoint(checkpoint_dir))
 
     for v in tf.global_variables():
@@ -46,7 +46,7 @@ def main():
     graph = session.graph
 
     with graph.as_default():
-        # # Placeholders for inputs and labels.
+        # Placeholders for inputs and labels.
         images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3])
 
         # Flatten input from: [None, height, width, channels]
@@ -76,6 +76,7 @@ def main():
 
     # EVALUATING THE TEST
     save_dir = 'output/' + directory + '/predictions'
+
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
@@ -84,7 +85,6 @@ def main():
     for pl in predicted:
         predicted_image = test_images32[i]
         save_numpy_array_as_image(predicted_image, save_dir, '/label_' + str(pl) + '_' + str(i) + '.png')
-        # p_i.save(save_dir+'/label_'+str(pl)+'_'+str(i)+'.png')
         i += 1
 
 def save_numpy_array_as_image(array, save_dir, filename):
