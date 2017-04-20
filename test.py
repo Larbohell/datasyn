@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
-TRAINING_TEST_DATA = 1
+TRAINING_TEST_DATA = 2
 MODEL_FOLDER_PATH = "BelgiumTS/2017_04_20_13.47" #"BelgiumTS/2017_04_18_17.57"
 
 IMAGE_SCALE_SIZE_X = 32
