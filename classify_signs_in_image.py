@@ -13,7 +13,7 @@ import classification
 ROOT_PATH = "output"
 IMAGE = "datasets/detection/TestIJCNN2013/00103.ppm"
 DETECTED_SIGNS_DIR = "FromTensorBox/detected_signs"
-MODEL_DIR = "BelgiumTS/2017_04_21_21.14_101"
+CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_21_21.14_101"
 
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
@@ -33,7 +33,7 @@ def main():
     #Classify sign type
     input_image_dimension = [IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y]
 
-    predicted_labels = classification.classify(sign_images_rescaled, MODEL_DIR, input_image_dimension)
+    predicted_labels = classification.classify(sign_images_rescaled, CLASSIFICATION_MODEL_DIR, input_image_dimension)
 
     # EVALUATING THE TEST
     timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M')
