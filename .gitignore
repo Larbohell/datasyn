@@ -100,4 +100,5 @@ TensorBox/output/*
 *.so
 TensorBox/inception/*
 
-datasets/*
+datasets/
+output/
