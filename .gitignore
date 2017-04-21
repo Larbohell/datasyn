@@ -100,5 +100,6 @@ TensorBox/output/*
 *.so
 TensorBox/inception/*
 
-datasets/*
+datasets\BelgiumTS\Testing
+datasets\BelgiumTS\Training
 output/*
