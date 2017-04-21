@@ -7,7 +7,7 @@ from PIL import Image
 import datetime
 import glob
 
-MODEL_DIR = "BelgiumTS/2017_04_21_19.56_300" #"BelgiumTS/2017_04_18_17.57"
+MODEL_DIR = "BelgiumTS/2017_04_21_21.14_101" #"BelgiumTS/2017_04_18_17.57"
 TEST_DATA_SET = "BelgiumTS"
 #TEST_DATA_SET = "GTSRB"
 #TEST_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
@@ -15,21 +15,21 @@ TEST_DATA_SET = "BelgiumTS"
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
-def main(test_data_set, model_dir):
+def main():
+    test()
 
-    train(test_data_set, model_dir)
-
-def train(directory, model_dir):
-    # Load training and testing datasets.
+def test():
     ROOT_PATH = "datasets"
+    directory = TEST_DATA_SET
+    # Load training and testing datasets.
     test_data_dir = os.path.join(ROOT_PATH, directory, "Testing")
 
     # Restore session and variables/nodes/weights
     session = tf.Session()
-    meta_file = os.path.join("output", model_dir, "save.ckpt.meta")
+    meta_file = os.path.join("output", MODEL_DIR, "save.ckpt.meta")
     saver = tf.train.import_meta_graph(meta_file)
 
-    checkpoint_dir = os.path.join("output", model_dir)
+    checkpoint_dir = os.path.join("output", MODEL_DIR)
     saver.restore(session, tf.train.latest_checkpoint(checkpoint_dir))
 
     # Load the test dataset.
@@ -141,5 +141,4 @@ def load_data(data_dir):
             labels.append(int(d))
     return images, labels
 
-if __name__ == '__main__':
-    main(TEST_DATA_SET, MODEL_DIR)
+main()
