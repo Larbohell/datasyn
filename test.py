@@ -5,19 +5,23 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 import datetime
+import glob
 
-MODEL_DIR = "BelgiumTS/2017_04_21_19.56_300" #"BelgiumTS/2017_04_18_17.57"
+MODEL_DIR = "BelgiumTS/2017_04_21_21.14_101" #"BelgiumTS/2017_04_18_17.57"
 TEST_DATA_SET = "BelgiumTS"
 #TEST_DATA_SET = "GTSRB"
-#TEST_DATA_SET = "Training_test_small_set"
+#TEST_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
 
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
 def main():
-    # Load training and testing datasets.
+    test()
+
+def test():
     ROOT_PATH = "datasets"
     directory = TEST_DATA_SET
+    # Load training and testing datasets.
     test_data_dir = os.path.join(ROOT_PATH, directory, "Testing")
 
     # Restore session and variables/nodes/weights
@@ -30,6 +34,7 @@ def main():
 
     # Load the test dataset.
     test_images, test_labels = load_data(test_data_dir)
+    #test_images = load_test_data_as_numpy_array(test_data_dir)
 
     # Transform the images, just like we did with the training set.
     test_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
@@ -81,7 +86,7 @@ def main():
         print("Lenght of predicted: ", len(predicted))
     match_count = sum([int(y == y_) for y, y_ in zip(test_labels, predicted)])
     accuracy = match_count / len(test_labels)
-    print("Accuracy: {:.3f}".format(accuracy))
+    print("Accuracy: {:.3f}". format(accuracy))
 
     # EVALUATING THE TEST
     timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M')
@@ -96,6 +101,14 @@ def main():
         predicted_image = test_images32[i]
         save_numpy_array_as_image(predicted_image, save_dir, '/label_' + str(pl) + '_' + str(i) + '.png')
         i += 1
+
+
+def load_test_data_as_numpy_array(data_dir):
+    images = []
+    for filename in glob.glob(data_dir + "/*.ppm"):
+        images.append(skimage.data.imread(filename))  # Loads the images as a list of numpy arrays
+
+    return images
 
 def save_numpy_array_as_image(array, save_dir, filename):
     #Rescale to 0-255 and convert to uint8
