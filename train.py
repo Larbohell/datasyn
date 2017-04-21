@@ -1,20 +1,16 @@
 import os
-import random
 import skimage.data
 import skimage.transform
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import datetime
-from PIL import Image, ImageDraw, ImageFont
 import glob
-
 import time
 
-from IPython import get_ipython
+TRAINING_NUMBER = 50
+DISPLAY_FREQUENCY = 50
 
-TRAINING_NUMBER = 10000
 #TRAINING_DATA_SET = "GTSRB"
 #TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
 TRAINING_DATA_SET = "BelgiumTS"
@@ -26,12 +22,6 @@ def main():
     train()
     end_time = time.time()
     print ("Total time elapsed: ", (end_time-start_time))
-
-# Allow image embeding in notebook
-#%matplotlib inline
-
-#from IPython import get_ipython
-#get_ipython().run_line_magic('matplotlib', 'inline')
 
 def load_train_data(data_dir):
     """Loads a data set and returns two lists:
@@ -98,12 +88,11 @@ def display_label_images(images, label):
 
 def save_model(sess, filename):
     if not os.path.exists("output"): os.makedirs("output")
-    dirname = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M')
+    dirname = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M') + "_" + str(TRAINING_NUMBER)
     os.makedirs(os.path.join("output", filename, dirname))
 
     saver = tf.train.Saver()
     saver.save(sess, os.path.abspath(os.path.join("output", filename, dirname, "save.ckpt")))
-    #saver.save(labels, filename+"_labels")
     # `save` method will call `export_meta_graph` implicitly.
     # you will get saved graph files:my-model.meta
 
@@ -114,15 +103,9 @@ def train():
     directory = TRAINING_DATA_SET
 
     train_data_dir = os.path.join(ROOT_PATH, directory + "/Training")
-    #test_data_dir = os.path.join(ROOT_PATH, directory + "/Testing")
-
     train_images, labels = load_train_data(train_data_dir)
-    #test_images = load_test_data_as_numpy_array(test_data_dir)
-
-    #test_images, _ = load_train_data(test_data_dir)
 
     print("Unique Labels: {0}\nTotal Train Images: {1}".format(len(set(labels)), len(train_images)))
-    #print("Total Test Images: ", len(test_images))
 
     # display_images_and_labels(train_images, labels)
 
@@ -132,16 +115,12 @@ def train():
     train_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
                       for image in train_images]
 
-    #test_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
-    #                 for image in test_images]
-
     save_images_and_labels_to_imagefile(train_images32, labels)
 
     labels_a = np.array(labels)
     train_images_a = np.array(train_images32)
-    # test_images_a = np.array(test_images32)
-    print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape,
-          "\nTest images: ", test_images_a.shape)
+    print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape)
+
     # Create a graph to hold the model.
     graph = tf.Graph()
 
@@ -159,9 +138,6 @@ def train():
         # Fully connected layer.
         # Generates logits of size [None, 62]
         logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu)
-        #tf.add_to_collection("logits", logits)
-        #print("images_ph: ", images_ph)
-        #tf.add_to_collection("images_ph", images_ph)
 
         # Convert logits to label indexes (int).
         # Shape [None], which is a 1D vector of length == batch_size.
@@ -192,65 +168,20 @@ def train():
 
         #The actual training
         start = time.time()
+        loss_value = None
+
         for i in range(TRAINING_NUMBER):
             _, loss_value = session.run([train, loss],
                                         feed_dict={images_ph: train_images_a, labels_ph: labels_a})
-            if i % 50 == 0:
+            if i % DISPLAY_FREQUENCY == 0:
                 print("Iter: " + str(i) +", Loss: ", loss_value, ", Time elapsed: ", time.time()-start)
 
-        #TESTING
-        #predicted_labels = session.run([predicted_labels],
-        #                               feed_dict={images_ph: test_images32})[0]
+        print("Iter: " + str(TRAINING_NUMBER-1) + ", Loss: ", loss_value, ", Time elapsed: ", time.time() - start)
 
-        #EVALUATING THE TEST
-        #save_dir = 'output/' + directory + '/predictions'
-        #if not os.path.exists(save_dir):
-        #    os.makedirs(save_dir)
-
-        #i = 0
-
-        #for pl in predicted_labels:
-        #    predicted_image = test_images32[i]
-        #    save_numpy_array_as_image(predicted_image,save_dir,'/label_'+str(pl)+'_'+str(i)+'.png')
-            #p_i.save(save_dir+'/label_'+str(pl)+'_'+str(i)+'.png')
-        #    i+=1
-
-        # # Pick 10 random train images
-        # sample_indexes = random.sample(range(len(train_images32)), 10)
-        # sample_images = [train_images32[i] for i in sample_indexes]
-        # sample_labels = [labels[i] for i in sample_indexes]
-        #
-        # # Run the "predicted_labels" op.
-        # predicted = session.run([predicted_labels],
-        #                         feed_dict={images_ph: sample_images})[0]
-        #
-        # print(sample_labels)
-        # p = "["
-        # for i in range(len(predicted)):
-        #     p += str(predicted[i]) + ", "
-        # print(p)
-        #
-        # # Display the predictions and the ground truth visually.
-        # fig = plt.figure(figsize=(10, 10))
-        # for i in range(len(sample_images)):
-        #     truth = sample_labels[i]
-        #     prediction = predicted[i]
-        #     plt.subplot(5, 2, 1 + i)
-        #     plt.axis('off')
-        #     color = 'green' if truth == prediction else 'red'
-        #     plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction),
-        #              fontsize=12, color=color)
-        #     plt.imshow(sample_images[i])
-        # plt.show()
-
-        print("Saving now...")
-        print("logits: ", logits)
-        print("predicted_labels: ", predicted_labels)
-        print("images_ph: ", images_ph)
-
-        # Save session
+       # Save session
         save_model(session, directory)
         # Close the session. This will destroy the trained model.
         session.close()
+        print("Model saved.")
 
 main()

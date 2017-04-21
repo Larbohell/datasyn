@@ -1,20 +1,15 @@
 import os
-import random
 import skimage.data
 import skimage.transform
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from PIL import Image
 import datetime
 
-TRAINING_TEST_DATA = 2
-MODEL_DIR = "BelgiumTS/2017_04_21_16.22" #"BelgiumTS/2017_04_18_17.57"
+MODEL_DIR = "BelgiumTS/2017_04_21_18.51" #"BelgiumTS/2017_04_18_17.57"
 TEST_DATA_SET = "BelgiumTS"
 #TEST_DATA_SET = "GTSRB"
 #TEST_DATA_SET = "Training_test_small_set"
-
 
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
@@ -29,15 +24,9 @@ def main():
     session = tf.Session()
     meta_file = os.path.join("output", MODEL_DIR, "save.ckpt.meta")
     saver = tf.train.import_meta_graph(meta_file)
-    #session.run(tf.global_variables_initializer())
+
     checkpoint_dir = os.path.join("output", MODEL_DIR)
     saver.restore(session, tf.train.latest_checkpoint(checkpoint_dir))
-
-    #saver.restore(session, checkpoint_dir)
-
-    #for v in tf.global_variables():
-        #print(v.name)
-        #session.run(v)
 
     # Load the test dataset.
     test_images, test_labels = load_data(test_data_dir)
@@ -47,8 +36,6 @@ def main():
                      for image in test_images]
 
     # Create a graph to hold the model.
-    #graph = session.graph
-    #graph = tf.Graph()
     graph = tf.get_default_graph()
 
     with graph.as_default():
@@ -61,38 +48,15 @@ def main():
 
         # Fully connected layer.
         # Generates logits of size [None, 62]
-        #logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu)
-        #vars = tf.global_variables()
-        weight0 = tf.global_variables()[0]
-        bias0 = tf.global_variables()[1]
-        #weight0 = var0._initializer()
-        #bias0 = var1._initializer()
-        #logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu, weights_initializer = i0, biases_initializer = i1)
-
-        #logits = tf.nn.relu(tf.matmul(images_ph, weight0) + bias0)
-        logits = tf.nn.relu(tf.matmul(images_flat, weight0) + bias0)
+        weights = tf.global_variables()[0]
+        biases = tf.global_variables()[1]
+        logits = tf.nn.relu(tf.matmul(images_flat, weights) + biases)
 
         predicted_labels = tf.argmax(logits, 1)
 
-        uninitialized_vars = []
-        print("All vars: ")
-        for var in tf.global_variables():
-            print(var)
-            try:
-                session.run(var)
-            except tf.errors.FailedPreconditionError:
-                uninitialized_vars.append(var)
-
-        print("Uninitialized vars: ")
-        for uvar in uninitialized_vars:
-            print(uvar)
-
-        init_new_vars_op = tf.variables_initializer(uninitialized_vars)
-        session.run(init_new_vars_op)
-
-        # Run predictions against the full test set.
-        predicted = session.run([predicted_labels],
-                                feed_dict={images_ph: test_images32})[0]
+    # Run predictions against the full test set.
+    predicted = session.run([predicted_labels],
+                            feed_dict={images_ph: test_images32})[0]
 
     # Calculate how many matches we got.
     if (len(test_labels) != len(predicted)):
@@ -147,21 +111,5 @@ def load_data(data_dir):
             images.append(skimage.data.imread(f))
             labels.append(int(d))
     return images, labels
-
-def restore_model(sess, model_folder_name):
-    sess = tf.Session()
-    #labels = tf.Tensor()
-    meta_file = os.path.join("output", model_folder_name, "save.meta")
-    new_saver = tf.train.import_meta_graph(meta_file)
-
-    checkpoint_dir = os.path.join("output", model_folder_name)
-    sess.run(tf.global_variables_initializer())
-    new_saver.restore(sess, tf.train.latest_checkpoint(checkpoint_dir))
-
-
-
-    #new_saver = tf.train.import_meta_graph(filename + "_labels" + '.meta')
-    #new_saver.restore(labels, tf.train.latest_checkpoint('./'))
-    return sess#, labels
 
 main()
