@@ -139,16 +139,17 @@ def train():
 
     labels_a = np.array(labels)
     train_images_a = np.array(train_images32)
-    #test_images_a = np.array(test_images32)
-    print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape)# "\nTest images: ", test_images_a.shape)
-
+    # test_images_a = np.array(test_images32)
+    print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape,
+          "\nTest images: ", test_images_a.shape)
     # Create a graph to hold the model.
     graph = tf.Graph()
 
     # Create model in the graph.
     with graph.as_default():
         # Placeholders for inputs and labels.
-        images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3], name="images_ph")
+        images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3],
+                                   name="images_ph")
         labels_ph = tf.placeholder(tf.int32, [None])
 
         # Flatten input from: [None, height, width, channels]
