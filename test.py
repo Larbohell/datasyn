@@ -31,9 +31,9 @@ def main():
     checkpoint_dir = os.path.join("output", MODEL_DIR)
     new_saver.restore(session, tf.train.latest_checkpoint(checkpoint_dir))
 
-    for v in tf.global_variables():
-        print(v.name)
-        session.run(v)
+    #for v in tf.global_variables():
+        #print(v.name)
+        #session.run(v)
 
     # Load the test dataset.
     test_images, test_labels = load_data(test_data_dir)
@@ -124,10 +124,7 @@ def restore_model(sess, model_folder_name):
     sess.run(tf.global_variables_initializer())
     new_saver.restore(sess, tf.train.latest_checkpoint(checkpoint_dir))
 
-    all_vars = tf.get_collection('vars')
-    for v in all_vars:
-        v_ = sess.run(v)
-        print(v_)
+
 
     #new_saver = tf.train.import_meta_graph(filename + "_labels" + '.meta')
     #new_saver.restore(labels, tf.train.latest_checkpoint('./'))
