@@ -15,18 +15,21 @@ TEST_DATA_SET = "BelgiumTS"
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
-def main():
+def main(test_data_set, model_dir):
+
+    train(test_data_set, model_dir)
+
+def train(directory, model_dir):
     # Load training and testing datasets.
     ROOT_PATH = "datasets"
-    directory = TEST_DATA_SET
     test_data_dir = os.path.join(ROOT_PATH, directory, "Testing")
 
     # Restore session and variables/nodes/weights
     session = tf.Session()
-    meta_file = os.path.join("output", MODEL_DIR, "save.ckpt.meta")
+    meta_file = os.path.join("output", model_dir, "save.ckpt.meta")
     saver = tf.train.import_meta_graph(meta_file)
 
-    checkpoint_dir = os.path.join("output", MODEL_DIR)
+    checkpoint_dir = os.path.join("output", model_dir)
     saver.restore(session, tf.train.latest_checkpoint(checkpoint_dir))
 
     # Load the test dataset.
@@ -138,4 +141,5 @@ def load_data(data_dir):
             labels.append(int(d))
     return images, labels
 
-main()
+if __name__ == '__main__':
+    main(TEST_DATA_SET, MODEL_DIR)
