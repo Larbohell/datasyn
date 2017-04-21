@@ -8,8 +8,8 @@ import datetime
 import glob
 import time
 
-TRAINING_NUMBER = 300
-DISPLAY_FREQUENCY = 10
+TRAINING_NUMBER = 101
+DISPLAY_FREQUENCY = 20
 
 #TRAINING_DATA_SET = "GTSRB"
 #TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
