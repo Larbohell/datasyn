@@ -6,7 +6,7 @@ import tensorflow as tf
 from PIL import Image
 import datetime
 
-MODEL_DIR = "BelgiumTS/2017_04_21_18.51" #"BelgiumTS/2017_04_18_17.57"
+MODEL_DIR = "BelgiumTS/2017_04_21_19.56_300" #"BelgiumTS/2017_04_18_17.57"
 TEST_DATA_SET = "BelgiumTS"
 #TEST_DATA_SET = "GTSRB"
 #TEST_DATA_SET = "Training_test_small_set"
@@ -48,9 +48,25 @@ def main():
 
         # Fully connected layer.
         # Generates logits of size [None, 62]
-        weights = tf.global_variables()[0]
-        biases = tf.global_variables()[1]
-        logits = tf.nn.relu(tf.matmul(images_flat, weights) + biases)
+        weights_0 = tf.global_variables()[0]
+        biases_0 = tf.global_variables()[1]
+        weights_1 = tf.global_variables()[2]
+        biases_1 = tf.global_variables()[3]
+        weights_2 = tf.global_variables()[4]
+        biases_2 = tf.global_variables()[5]
+
+        #weights_0 = tf.get_variable("fully_connected/weights:0")
+        #biases_0 = tf.get_variable("fully_connected/biases:0")
+        #weights_1 = tf.get_variable("fully_connected_1/weights:0")
+        #biases_1 = tf.get_variable("fully_connected_1/biases:0")
+
+        #for var in tf.global_variables():
+            #print(var)
+            #print(var.name)
+
+        hidden1 = tf.nn.relu(tf.matmul(images_flat, weights_0) + biases_0)
+        hidden2 = tf.nn.relu(tf.matmul(hidden1, weights_1) + biases_1)
+        logits = tf.nn.relu(tf.matmul(hidden2, weights_2) + biases_2)
 
         predicted_labels = tf.argmax(logits, 1)
 

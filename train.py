@@ -8,8 +8,8 @@ import datetime
 import glob
 import time
 
-TRAINING_NUMBER = 50
-DISPLAY_FREQUENCY = 50
+TRAINING_NUMBER = 300
+DISPLAY_FREQUENCY = 10
 
 #TRAINING_DATA_SET = "GTSRB"
 #TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
@@ -137,7 +137,9 @@ def train():
 
         # Fully connected layer.
         # Generates logits of size [None, 62]
-        logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu)
+        hidden1 = tf.contrib.layers.fully_connected(images_flat, 100, tf.nn.relu)
+        hidden2 = tf.contrib.layers.fully_connected(hidden1, 100, tf.nn.relu)
+        logits = tf.contrib.layers.fully_connected(hidden2, 62, tf.nn.relu)
 
         # Convert logits to label indexes (int).
         # Shape [None], which is a 1D vector of length == batch_size.
