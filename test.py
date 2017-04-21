@@ -66,6 +66,10 @@ def main():
                             feed_dict={images_ph: test_images32})[0]
 
     # Calculate how many matches we got.
+    if (len(test_labels) != len(predicted)):
+        print("Length of test labels != length og predicted and accuracy is not correctly calculated")
+        print("Length of test labels: ", len(test_labels))
+        print("Lenght of predicted: ", len(predicted))
     match_count = sum([int(y == y_) for y, y_ in zip(test_labels, predicted)])
     accuracy = match_count / len(test_labels)
     print("Accuracy: {:.3f}".format(accuracy))

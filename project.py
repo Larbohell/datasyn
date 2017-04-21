@@ -14,8 +14,10 @@ import time
 
 from IPython import get_ipython
 
-TRAINING_NUMBER = 100
-TRAINING_TEST_DATA = 2 #1 = Training_test_small_set, 2 = BelgiumTS, 3 = FromTensorBox
+TRAINING_NUMBER = 10000
+#TRAINING_DATA_SET = "GTSRB"
+#TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
+TRAINING_DATA_SET = "BelgiumTS"
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
@@ -62,7 +64,7 @@ def load_test_data_as_numpy_array(data_dir):
 
     return images
 
-def display_images_and_labels(images, labels):
+def save_images_and_labels_to_imagefile(images, labels):
     """Display the first image of each label."""
     unique_labels = set(labels)
     plt.figure(figsize=(15, 15))
@@ -94,7 +96,7 @@ def display_label_images(images, label):
         plt.imshow(image)
     plt.show()
 
-def save_model(sess, filename, labels):
+def save_model(sess, filename):
     if not os.path.exists("output"): os.makedirs("output")
     dirname = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M')
     os.makedirs(os.path.join("output", filename, dirname))
@@ -109,26 +111,18 @@ def save_model(sess, filename, labels):
 def train():
     # Load training and testing datasets.
     ROOT_PATH = "datasets"
-    directory = "GTSRB"
-    if (TRAINING_TEST_DATA == 1):
-        directory = "Training_test_small_set"
-
-    if (TRAINING_TEST_DATA == 2):
-        directory = "BelgiumTS"
-
-    if (TRAINING_TEST_DATA == 3):
-        directory = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
+    directory = TRAINING_DATA_SET
 
     train_data_dir = os.path.join(ROOT_PATH, directory + "/Training")
-    test_data_dir = os.path.join(ROOT_PATH, directory + "/Testing")
+    #test_data_dir = os.path.join(ROOT_PATH, directory + "/Testing")
 
     train_images, labels = load_train_data(train_data_dir)
     #test_images = load_test_data_as_numpy_array(test_data_dir)
 
-    test_images, _ = load_train_data(test_data_dir)
+    #test_images, _ = load_train_data(test_data_dir)
 
     print("Unique Labels: {0}\nTotal Train Images: {1}".format(len(set(labels)), len(train_images)))
-    print("Total Test Images: ", len(test_images))
+    #print("Total Test Images: ", len(test_images))
 
     # display_images_and_labels(train_images, labels)
 
@@ -138,15 +132,15 @@ def train():
     train_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
                       for image in train_images]
 
-    test_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
-                     for image in test_images]
+    #test_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
+    #                 for image in test_images]
 
-    display_images_and_labels(train_images32, labels)
+    save_images_and_labels_to_imagefile(train_images32, labels)
 
     labels_a = np.array(labels)
     train_images_a = np.array(train_images32)
-    test_images_a = np.array(test_images32)
-    print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape, "\nTest images: ", test_images_a.shape)
+    #test_images_a = np.array(test_images32)
+    print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape)# "\nTest images: ", test_images_a.shape)
 
     # Create a graph to hold the model.
     graph = tf.Graph()
@@ -200,25 +194,25 @@ def train():
         for i in range(TRAINING_NUMBER):
             _, loss_value = session.run([train, loss],
                                         feed_dict={images_ph: train_images_a, labels_ph: labels_a})
-            if i % 1000 == 0:
+            if i % 50 == 0:
                 print("Iter: " + str(i) +", Loss: ", loss_value, ", Time elapsed: ", time.time()-start)
 
         #TESTING
-        predicted_labels = session.run([predicted_labels],
-                                       feed_dict={images_ph: test_images32})[0]
+        #predicted_labels = session.run([predicted_labels],
+        #                               feed_dict={images_ph: test_images32})[0]
 
         #EVALUATING THE TEST
-        save_dir = 'output/' + directory + '/predictions'
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
+        #save_dir = 'output/' + directory + '/predictions'
+        #if not os.path.exists(save_dir):
+        #    os.makedirs(save_dir)
 
-        i = 0
+        #i = 0
 
-        for pl in predicted_labels:
-            predicted_image = test_images32[i]
-            save_numpy_array_as_image(predicted_image,save_dir,'/label_'+str(pl)+'_'+str(i)+'.png')
+        #for pl in predicted_labels:
+        #    predicted_image = test_images32[i]
+        #    save_numpy_array_as_image(predicted_image,save_dir,'/label_'+str(pl)+'_'+str(i)+'.png')
             #p_i.save(save_dir+'/label_'+str(pl)+'_'+str(i)+'.png')
-            i+=1
+        #    i+=1
 
         # # Pick 10 random train images
         # sample_indexes = random.sample(range(len(train_images32)), 10)
@@ -254,23 +248,8 @@ def train():
         print("images_ph: ", images_ph)
 
         # Save session
-        save_model(session, directory, predicted_labels)
+        save_model(session, directory)
         # Close the session. This will destroy the trained model.
         session.close()
-
-def save_numpy_array_as_image(array, save_dir, filename):
-    #Rescale to 0-255 and convert to uint8
-    rescaled = (255.0 / array.max() * (array - array.min())).astype(np.uint8)
-
-    im = Image.fromarray(rescaled)
-    im.save(save_dir + filename)
-
-
-def draw_on_image(image, label):
-    draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype("arial.ttf", 10)
-    draw.text((0,0), str(label), (255,0,0), font=font)
-
-    return image
 
 main()
