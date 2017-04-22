@@ -1,0 +1,61 @@
+{
+    "reregress": true,
+    "use_lstm": false,
+    "save_dir": "output/overfeat_rezoom_2017_04_18_23.35",
+    "image_height": 480,
+    "rezoom_h_coords": [
+        -0.25,
+        0.25
+    ],
+    "biggest_box_px": 10000,
+    "rezoom_change_loss": "center",
+    "image_width": 640,
+    "region_size": 32,
+    "lstm_size": 500,
+    "rnn_len": 1,
+    "avg_pool_size": 5,
+    "early_feat_channels": 256,
+    "deconv": false,
+    "clip_norm": 1.0,
+    "slim_top_lname": "Mixed_5b",
+    "grid_width": 20,
+    "slim_basename": "InceptionV1",
+    "slim_attention_lname": "Mixed_3b",
+    "exp_name": "overfeat_rezoom",
+    "data": {
+        "test_idl": "./data/brainwash/val_boxes.json",
+        "train_idl": "./data/brainwash/train_boxes.json",
+        "truncate_data": false
+    },
+    "use_rezoom": true,
+    "rezoom_w_coords": [
+        -0.25,
+        0.25
+    ],
+    "focus_size": 1.8,
+    "num_classes": 2,
+    "num_lstm_layers": 2,
+    "later_feat_channels": 832,
+    "slim_ckpt": "inception_v1.ckpt",
+    "logging": {
+        "display_iter": 300,
+        "save_iter": 300
+    },
+    "grid_height": 15,
+    "batch_size": 1,
+    "solver": {
+        "opt": "RMS",
+        "rnd_seed": 1,
+        "hungarian_iou": 0.25,
+        "weights": "",
+        "head_weights": [
+            1.0,
+            0.1
+        ],
+        "learning_rate": 0.001,
+        "use_jitter": false,
+        "gpu": 0,
+        "learning_rate_step": 33000,
+        "epsilon": 1e-05
+    }
+}
