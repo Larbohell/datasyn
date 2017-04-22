@@ -1,14 +1,17 @@
 import os
 import skimage.data
 import skimage.transform
+import skimage.exposure as exposure
 import numpy as np
 import tensorflow as tf
 from PIL import Image
 import datetime
 import glob
+import cv2
 
-MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001" #"BelgiumTS/2017_04_18_17.57"
+MODEL_DIR = "BelgiumTS/2017_04_22_23.48_1000" #"BelgiumTS/2017_04_18_17.57"
 TEST_DATA_SET = "BelgiumTS"
+#TEST_DATA_SET = "Training_test_small_set"
 #TEST_DATA_SET = "GTSRB"
 #TEST_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
 
@@ -17,6 +20,15 @@ IMAGE_SCALE_SIZE_Y = 32
 
 def main():
     test()
+
+def pre_process_single_img(img):
+    img_y = cv2.cvtColor(img, (cv2.COLOR_BGR2YUV))[:,:,0]
+    img_y = (img_y / 255.).astype(np.float32)
+    img_y = (exposure.equalize_adapthist(img_y,) - 0.5)
+    return img_y
+
+def add_dimension(img):
+    return img.reshape(img.shape + (1,))
 
 def test():
     ROOT_PATH = "datasets"
@@ -40,12 +52,15 @@ def test():
     test_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
                      for image in test_images]
 
+    # Add dimension for tensorflow
+    test_images32 = [add_dimension(image) for image in test_images32]
+
     # Create a graph to hold the model.
     graph = tf.get_default_graph()
 
     with graph.as_default():
         # Placeholders for inputs and labels.
-        images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3])
+        images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 1])
 
         # Flatten input from: [None, height, width, channels]
         # To: [None, height * width * channels] == [None, 3072]
@@ -99,6 +114,7 @@ def test():
 
     for pl in predicted:
         predicted_image = test_images32[i]
+        predicted_image.shape = (32,32);
         save_numpy_array_as_image(predicted_image, save_dir, '/label_' + str(pl) + '_' + str(i) + '.png')
         i += 1
 
@@ -130,15 +146,23 @@ def load_data(data_dir):
     # two lists, labels and images.
     labels = []
     images = []
+
+    i = 0
+    print("Start loading of ", len(directories), " image directories")
     for d in directories:
         label_dir = os.path.join(data_dir, d)
         file_names = [os.path.join(label_dir, f)
                       for f in os.listdir(label_dir) if f.endswith(".ppm")]
         # For each label, load it's images and add them to the images list.
         # And add the label number (i.e. directory name) to the labels list.
+
         for f in file_names:
-            images.append(skimage.data.imread(f))
+            images.append(pre_process_single_img(skimage.data.imread(f)))
             labels.append(int(d))
+
+        print("Loaded directory number ", i)
+        i += 1
+
     return images, labels
 
 main()

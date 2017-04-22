@@ -1,6 +1,8 @@
 import os
+import cv2
 import skimage.data
 import skimage.transform
+import skimage.exposure as exposure
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
@@ -8,11 +10,11 @@ import datetime
 import glob
 import time
 
-TRAINING_NUMBER = 20
-DISPLAY_FREQUENCY = 1
+TRAINING_NUMBER = 1000
+DISPLAY_FREQUENCY = 10
 MODEL_DIR = "BelgiumTS/2017_04_22_17.34_20"
 #MODEL_DIR = "Training_test_small_set/2017_04_22_17.27_100"
-CONTINUE_TRAINING_ON_MODEL = True
+CONTINUE_TRAINING_ON_MODEL = False
 
 #TRAINING_DATA_SET = "GTSRB"
 #TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
@@ -40,15 +42,24 @@ def load_train_data(data_dir):
     # two lists, labels and images.
     labels = []
     images = []
+
+    i = 0
+    print("Start loading of ", len(directories), " image directories")
     for d in directories:
         label_dir = os.path.join(data_dir, d)
         file_names = [os.path.join(label_dir, f)
                       for f in os.listdir(label_dir) if f.endswith(".ppm")]
         # For each label, load it's images and add them to the images list.
         # And add the label number (i.e. directory name) to the labels list.
+
         for f in file_names:
-            images.append(skimage.data.imread(f))
+            images.append(pre_process_single_img(skimage.data.imread(f)))
+            #images.append(skimage.data.imread(f))
             labels.append(int(d))
+
+        print("Loaded directory number ", i)
+        i += 1
+
     return images, labels
 
 def load_test_data_as_numpy_array(data_dir):
@@ -70,10 +81,9 @@ def save_images_and_labels_to_imagefile(images, labels):
         plt.axis('off')
         plt.title("Label {0} ({1})".format(label, labels.count(label)))
         i += 1
-        _ = plt.imshow(image)
+        _ = plt.imshow(image, cmap="gray")
     #plt.show()
     plt.savefig('labels_and_corresponding_images.png')
-
 
 def display_label_images(images, label):
     """Display images of a specific label."""
@@ -100,6 +110,14 @@ def save_model(sess, filename):
     # `save` method will call `export_meta_graph` implicitly.
     # you will get saved graph files:my-model.meta
 
+def pre_process_single_img(img):
+    img_y = cv2.cvtColor(img, (cv2.COLOR_BGR2YUV))[:,:,0]
+    img_y = (img_y / 255.).astype(np.float32)
+    img_y = (exposure.equalize_adapthist(img_y,) - 0.5)
+    return img_y
+
+def add_dimension(img):
+    return img.reshape(img.shape + (1,))
 
 def train():
     # Load training and testing datasets.
@@ -119,7 +137,12 @@ def train():
     train_images32 = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
                       for image in train_images]
 
+    #train_images32 = [pre_process_single_img(image) for image in train_images32]
+
     save_images_and_labels_to_imagefile(train_images32, labels)
+
+    # Add dimension for tensorflow
+    train_images32 = [add_dimension(image) for image in train_images32]
 
     labels_a = np.array(labels)
     train_images_a = np.array(train_images32)
@@ -145,7 +168,7 @@ def train():
             images_ph = graph.get_tensor_by_name("images_ph:0")
             labels_ph = graph.get_tensor_by_name("labels_ph:0")
         else:
-            images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3],
+            images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 1],
                                    name="images_ph")
             labels_ph = tf.placeholder(tf.int32, [None], name="labels_ph")
 
