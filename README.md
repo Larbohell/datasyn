@@ -16,9 +16,21 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
 
 4. Finn visualisering av evauleringen i output/overfeat_rezoom_<correct_folder>/images_val_boxes<numOfIterations>
 
-## To do
-* Skrive til fil, så nettverket ikke må trenes hver gang
+## Har gjort
+* Funnet bildeklassifiseringsAI
+* Funnet bildesegmenteringsAI
+* Skrive/lese nettverk til/fra fil 
+* Forbedre bildeklassiferingsAI med flere hidden layers i nettverket
 
+## To do
+* Integrert system for segmentering og klassifisering av et enkelt bilde
+* Tidstest av segmentering og klassifisering av skilt
+* Laste inn hidden layers
+* Finne accuracy for ulikt antall hidden layers og bestemme optimalt antall
+* Flere bilder fra live video feed sendes inn og kan brukes sammen + Random Forest på resultatene fra alle bildene
+
+## Verdt å notere seg
+* Skiltfinneren leter ikke etter de samme skiltene som classifyeren vår
 
 ### Forbedringsmuligheter
 
@@ -44,3 +56,6 @@ https://drive.google.com/file/d/0B1EcuNVaOt3QeU5xb2xzNUxpSWc/view?usp=sharing
 
 Loss and accuracy in tensorflow explained:
 http://stackoverflow.com/questions/34518656/how-to-interpret-loss-and-accuracy-for-a-machine-learning-model
+
+Tensorflow layers calculation
+https://www.tensorflow.org/get_started/mnist/mechanics
