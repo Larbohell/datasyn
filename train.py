@@ -8,14 +8,16 @@ import datetime
 import glob
 import time
 
-TRAINING_NUMBER = 100
-DISPLAY_FREQUENCY = 10
-MODEL_DIR = "BelgiumTS/2017_04_21_22.05_1"
+TRAINING_NUMBER = 20
+DISPLAY_FREQUENCY = 1
+MODEL_DIR = "BelgiumTS/2017_04_22_17.34_20"
+#MODEL_DIR = "Training_test_small_set/2017_04_22_17.27_100"
 CONTINUE_TRAINING_ON_MODEL = True
 
 #TRAINING_DATA_SET = "GTSRB"
 #TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
 TRAINING_DATA_SET = "BelgiumTS"
+#TRAINING_DATA_SET = "Training_test_small_set"
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
@@ -139,9 +141,13 @@ def train():
     # Create model in the graph.
     with graph.as_default():
         # Placeholders for inputs and labels.
-        images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3],
+        if CONTINUE_TRAINING_ON_MODEL:
+            images_ph = graph.get_tensor_by_name("images_ph:0")
+            labels_ph = graph.get_tensor_by_name("labels_ph:0")
+        else:
+            images_ph = tf.placeholder(tf.float32, [None, IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y, 3],
                                    name="images_ph")
-        labels_ph = tf.placeholder(tf.int32, [None])
+            labels_ph = tf.placeholder(tf.int32, [None], name="labels_ph")
 
         # Flatten input from: [None, height, width, channels]
         # To: [None, height * width * channels] == [None, 3072]
@@ -161,11 +167,8 @@ def train():
             hidden2 = tf.nn.relu(tf.matmul(hidden1, weights_1) + biases_1)
             logits = tf.nn.relu(tf.matmul(hidden2, weights_2) + biases_2)
 
-            #loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph))
-            loss = graph.get_tensor_by_name("Loss")
+            loss = graph.get_tensor_by_name("Lossy:0")
             train = graph.get_operation_by_name("Adam")
-            print(train)
-            #train = adam.minimize(loss)
         else:
             hidden1 = tf.contrib.layers.fully_connected(images_flat, 100, tf.nn.relu)
             hidden2 = tf.contrib.layers.fully_connected(hidden1, 100, tf.nn.relu)
@@ -173,9 +176,10 @@ def train():
 
             # Define the loss function.
             # Cross-entropy is a good choice for classification.
-            loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph), name = "Loss")
+            loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph),
+                                  name="Lossy")
             # Create training op.
-            adam = tf.train.AdamOptimizer(learning_rate=0.001, name = "Adam")
+            adam = tf.train.AdamOptimizer(learning_rate=0.001, name="Adam")
             train = adam.minimize(loss)
             print(train)
 
