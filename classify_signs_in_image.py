@@ -13,7 +13,7 @@ import classification
 ROOT_PATH = "output"
 IMAGE = "datasets/detection/TestIJCNN2013/00103.ppm"
 DETECTED_SIGNS_DIR = "FromTensorBox/detected_signs"
-CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_21_21.14_101"
+CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001"
 
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
@@ -36,6 +36,8 @@ def main():
     predicted_labels = classification.classify(sign_images_rescaled, CLASSIFICATION_MODEL_DIR, input_image_dimension)
 
     # EVALUATING THE TEST
+    #TODO:
+
     timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M')
     save_dir = 'output/' + DETECTED_SIGNS_DIR + '/predictions_' + timestamp
 

@@ -7,7 +7,7 @@ from PIL import Image
 import datetime
 import glob
 
-MODEL_DIR = "BelgiumTS/2017_04_21_21.14_101" #"BelgiumTS/2017_04_18_17.57"
+MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001" #"BelgiumTS/2017_04_18_17.57"
 TEST_DATA_SET = "BelgiumTS"
 #TEST_DATA_SET = "GTSRB"
 #TEST_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"

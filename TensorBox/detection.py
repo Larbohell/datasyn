@@ -38,7 +38,6 @@ def get_results(args, H):
 
         pred_annolist = al.AnnoList()
 
-        ##Custom configuration
         data_dir = os.path.dirname(args.image_dir)
         image_dir = get_image_dir(args)
         os.makedirs(image_dir, exist_ok=True)
@@ -71,40 +70,6 @@ def get_results(args, H):
         imname = '%s/%s' % (image_dir, os.path.basename(pred_anno.imageName))
         misc.imsave(imname, new_img)
 
-        ###
-        # true_annolist = al.parse(args.image_dir)
-        # data_dir = os.path.dirname(args.image_dir)
-        # image_dir = get_image_dir(args)
-        # os.makedirs(image_dir, exist_ok=True)
-        # print('Outputs will be stored in {}'.format(image_dir))
-        #
-        #
-        #
-        # for i in range(len(true_annolist)):
-        #     try:
-        #         true_anno = true_annolist[i]
-        #         orig_img = imread('%s/%s' % (data_dir, true_anno.imageName))[:,:,:3]
-        #         img = imresize(orig_img, (H["image_height"], H["image_width"]), interp='cubic')
-        #         feed = {x_in: img}
-        #         (np_pred_boxes, np_pred_confidences) = sess.run([pred_boxes, pred_confidences], feed_dict=feed)
-        #         print(np_pred_boxes)
-        #         pred_anno = al.Annotation()
-        #         pred_anno.imageName = true_anno.imageName
-        #         new_img, rects = add_rectangles(H, [img], np_pred_confidences, np_pred_boxes,
-        #                                         use_stitching=True, rnn_len=H['rnn_len'], min_conf=args.min_conf, tau=args.tau, show_suppressed=args.show_suppressed)
-        #
-        #         pred_anno.rects = rects
-        #         pred_anno.imagePath = os.path.abspath(data_dir)
-        #         pred_anno = rescale_boxes((H["image_height"], H["image_width"]), pred_anno, orig_img.shape[0], orig_img.shape[1])
-        #         pred_annolist.append(pred_anno)
-        #
-        #         imname = '%s/%s' % (image_dir, os.path.basename(true_anno.imageName))
-        #         misc.imsave(imname, new_img)
-        #     except FileNotFoundError:
-        #         pass
-        #     if i % 25 == 0:
-        #         print(i)
-
     return pred_annolist
 def main():
     parser = argparse.ArgumentParser()
@@ -125,13 +90,10 @@ def main():
         H = json.load(f)
     expname = args.expname + '_' if args.expname else ''
     pred_boxes = '%s.%s%s' % (args.weights, expname, os.path.basename(args.image_dir))
-    #true_boxes = '%s.gt_%s%s' % (args.weights, expname, os.path.basename(args.image_dir))
 
 
-    #pred_annolist, true_annolist = get_results(args, H)
     pred_annolist = get_results(args, H)
     pred_annolist.save(pred_boxes)
-    #true_annolist.save(true_boxes)
 """
     try:
         rpc_cmd = './utils/annolist/doRPC.py --minOverlap %f %s %s' % (args.iou_threshold, true_boxes, pred_boxes)
