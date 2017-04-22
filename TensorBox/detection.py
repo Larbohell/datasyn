@@ -56,7 +56,7 @@ def get_results(args, H):
             print("Pred box nr. ", str(i), ": ", np_pred_box)
 
         pred_anno = al.Annotation()
-        pred_anno.imageName = "tiss.ppm"
+        pred_anno.imageName = "00420.ppm"
         new_img, rects = add_rectangles(H, [img], np_pred_confidences, np_pred_boxes,
                                         use_stitching=True, rnn_len=H['rnn_len'], min_conf=args.min_conf, tau=args.tau,
                                         show_suppressed=args.show_suppressed)
@@ -72,7 +72,7 @@ def get_results(args, H):
 
     return pred_annolist
 
-def main(weights, image_dir):
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', default=weights)
     parser.add_argument('--expname', default='')
@@ -110,6 +110,3 @@ def main(weights, image_dir):
     except Exception as e:
         print(e)
 """
-
-if __name__ == '__main__':
-    main()
