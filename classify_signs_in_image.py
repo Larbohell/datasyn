@@ -16,14 +16,14 @@ ROOT_PATH = "output"
 IMAGE_NAME = "00420.ppm"
 
 #Detection paths and filenames
-DETECTION_MODEL_DIR = "TensorBox/output/tensorbox_7500"
-JSON_FILE_PATH = "TensorBox/output/tensorbox_7500/save.ckpt-7500.test_boxes.json"
-SAVE_CROPPED_IMG_PATH = "TensorBox/output/tensorbox_7500/cropped_images"
+DETECTION_MODEL_DIR = "trainedNetworks/TensorBoxNetworks/7500iter"
+JSON_FILE_PATH = DETECTION_MODEL_DIR + "/save.ckpt-7500.val_boxes.json"
+
+SAVE_CROPPED_IMG_PATH = DETECTION_MODEL_DIR + "cropped_images"
 FILE_FORMAT = ".ppm" #The file format of the image(s) containing detected signs
 
-DETECTION_MODEL = "trainedNetworks/TensorBoxNetworks/7500iter/save.ckpt-7500"
+DETECTION_MODEL = DETECTION_MODEL_DIR + "/save.ckpt-7500"
 EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
-
 
 
 #Classification paths and filenames
@@ -36,16 +36,16 @@ IMAGE_SCALE_SIZE_Y = 32
 
 def main():
     #Sign detection
-
-
+    print("SIGN DETECTION")
     bashCommand = "python TensorBox/detection.py --weights " + DETECTION_MODEL + " --image_dir " + EMPTY_JSON_FILE
     #os.system(bashCommand)
 
     result = subprocess.run(bashCommand.split(), stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
 
-        #TODO create a json-file and an image with detected signs
+    print("SIGN DETECTION DONE")
 
+    print("CROPPING IMAGES")
     #Crop signs out of the images gotten from detection
     cropped_images = crop_image.main(JSON_FILE_PATH)
 
@@ -58,9 +58,10 @@ def main():
         image.save(SAVE_CROPPED_IMG_PATH + "/cropped_image_" + str(i) + FILE_FORMAT)
         i += 1
 
-
+    print("CROPPING DONE")
     #SIGN RECOGNITION
     #Load images of detected signs from the TensorBox network
+    print("SIGN RECOGNITION")
     sign_images = load_data(SAVE_CROPPED_IMG_PATH)
 
     #Rescale

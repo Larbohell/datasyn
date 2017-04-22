@@ -13,6 +13,8 @@ from scipy import misc
 import tensorflow as tf
 import numpy as np
 from distutils.version import LooseVersion
+
+
 if LooseVersion(tf.__version__) >= LooseVersion('1.0'):
     rnn_cell = tf.contrib.rnn
 else:

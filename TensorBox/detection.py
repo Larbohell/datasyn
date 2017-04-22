@@ -45,6 +45,7 @@ def get_results(args, H):
         print('Outputs will be stored in {}'.format(image_dir))
 
         orig_img = imread('%s/%s' % (data_dir, "00002.ppm"))[:, :, :3]
+
         img = imresize(orig_img, (H["image_height"], H["image_width"]), interp='cubic')
         feed = {x_in: img}
         (np_pred_boxes, np_pred_confidences) = sess.run([pred_boxes, pred_confidences], feed_dict=feed)
@@ -56,7 +57,7 @@ def get_results(args, H):
             print("Pred box nr. ", str(i), ": ", np_pred_box)
 
         pred_anno = al.Annotation()
-        pred_anno.imageName = "00002.png"
+        pred_anno.imageName = "00002.ppm"
         new_img, rects = add_rectangles(H, [img], np_pred_confidences, np_pred_boxes,
                                         use_stitching=True, rnn_len=H['rnn_len'], min_conf=args.min_conf, tau=args.tau,
                                         show_suppressed=args.show_suppressed)
@@ -73,6 +74,7 @@ def get_results(args, H):
     return pred_annolist
 
 def main():
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', required=True)
     parser.add_argument('--expname', default='')
