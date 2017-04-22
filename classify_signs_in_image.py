@@ -18,6 +18,8 @@ import crop_image
 DETECTION_MODEL_DIR = "trainedNetworks/TensorBoxNetworks/7500iter"
 JSON_FILE_PATH = DETECTION_MODEL_DIR + "/save.ckpt-7500.val_boxes.json"
 IMAGE_NAME = "elgesetergate.png"
+#IMAGE_NAME = "00023.ppm"
+
 
 SAVE_CROPPED_IMG_PATH = DETECTION_MODEL_DIR + "/cropped_images"
 FILE_FORMAT = ".png" #The file format of the image(s) containing detected signs
@@ -27,8 +29,8 @@ EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
 
 
 #Classification paths and filenames
-CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001"
-CLASSIFIED_IMAGES_SAVE_PATH = "output/BelgiumTS/2017_04_22_12.24_1001/classified_signs"
+CLASSIFICATION_MODEL_DIR = "trainedNetworks/ClassificationNetworks/1001iter_72acc"
+CLASSIFIED_IMAGES_SAVE_PATH = CLASSIFICATION_MODEL_DIR + "/classified_signs"
 
 
 IMAGE_SCALE_SIZE_X = 32
@@ -55,7 +57,7 @@ def main():
 
     i = 0
     for image in cropped_images:
-        image.save(SAVE_CROPPED_IMG_PATH + "/cropped_image_" + str(i) + FILE_FORMAT)
+        image.save(SAVE_CROPPED_IMG_PATH + "/cropped_image_" + str(i) + FILE_FORMAT) #save image
         i += 1
 
     print("CROPPING DONE")
@@ -91,7 +93,7 @@ def main():
 
 def load_data(data_dir):
     images = []
-    for filename in glob.glob(data_dir+"/*.png"):
+    for filename in glob.glob(data_dir+"/*"+ FILE_FORMAT):
         images.append(skimage.data.imread(filename)) #Loads the images as a list of numpy arrays
 
     return images

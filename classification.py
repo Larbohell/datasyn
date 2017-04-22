@@ -12,10 +12,10 @@ def classify(test_images, model_dir, input_image_dim):
 
     # Restore session and variables/nodes/weights
     session = tf.Session()
-    meta_file = os.path.join("output", model_dir, "save.ckpt.meta")
+    meta_file = os.path.join(model_dir, "save.ckpt.meta")
     saver = tf.train.import_meta_graph(meta_file)
 
-    checkpoint_dir = os.path.join("output", model_dir)
+    checkpoint_dir = os.path.join(model_dir)
     saver.restore(session, tf.train.latest_checkpoint(checkpoint_dir))
 
     # Create a graph to hold the model.
