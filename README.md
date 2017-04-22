@@ -67,5 +67,5 @@ http://stackoverflow.com/questions/34518656/how-to-interpret-loss-and-accuracy-f
 Tensorflow layers calculation
 https://www.tensorflow.org/get_started/mnist/mechanics
 
-Litt mer nøye dude
+Bedre classifier med pre-processing
 http://jokla.me/robotics/traffic-signs/
