@@ -44,7 +44,7 @@ def get_results(args, H):
 
         print('Outputs will be stored in {}'.format(image_dir))
 
-        orig_img = imread('%s/%s' % (data_dir, "00002.ppm"))[:, :, :3]
+        orig_img = imread('%s/%s' % (data_dir, args.image_name))[:, :, :3]
 
         img = imresize(orig_img, (H["image_height"], H["image_width"]), interp='cubic')
         feed = {x_in: img}
@@ -57,7 +57,7 @@ def get_results(args, H):
             print("Pred box nr. ", str(i), ": ", np_pred_box)
 
         pred_anno = al.Annotation()
-        pred_anno.imageName = "00002.ppm"
+        pred_anno.imageName = args.image_name
         new_img, rects = add_rectangles(H, [img], np_pred_confidences, np_pred_boxes,
                                         use_stitching=True, rnn_len=H['rnn_len'], min_conf=args.min_conf, tau=args.tau,
                                         show_suppressed=args.show_suppressed)
@@ -77,6 +77,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', required=True)
+    parser.add_argument('--image_name', required=True)
     parser.add_argument('--expname', default='')
     parser.add_argument('--image_dir', required=True)
     parser.add_argument('--gpu', default=0)

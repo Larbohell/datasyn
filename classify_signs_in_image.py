@@ -12,15 +12,15 @@ import subprocess
 import classification
 import crop_image
 
-ROOT_PATH = "output"
-IMAGE_NAME = "00420.ppm"
+
 
 #Detection paths and filenames
 DETECTION_MODEL_DIR = "trainedNetworks/TensorBoxNetworks/7500iter"
 JSON_FILE_PATH = DETECTION_MODEL_DIR + "/save.ckpt-7500.val_boxes.json"
+IMAGE_NAME = "elgesetergate.png"
 
-SAVE_CROPPED_IMG_PATH = DETECTION_MODEL_DIR + "cropped_images"
-FILE_FORMAT = ".ppm" #The file format of the image(s) containing detected signs
+SAVE_CROPPED_IMG_PATH = DETECTION_MODEL_DIR + "/cropped_images"
+FILE_FORMAT = ".png" #The file format of the image(s) containing detected signs
 
 DETECTION_MODEL = DETECTION_MODEL_DIR + "/save.ckpt-7500"
 EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
@@ -37,7 +37,7 @@ IMAGE_SCALE_SIZE_Y = 32
 def main():
     #Sign detection
     print("SIGN DETECTION")
-    bashCommand = "python TensorBox/detection.py --weights " + DETECTION_MODEL + " --image_dir " + EMPTY_JSON_FILE
+    bashCommand = "python TensorBox/detection.py --weights " + DETECTION_MODEL + " --image_dir " + EMPTY_JSON_FILE + " --image_name " + IMAGE_NAME
     #os.system(bashCommand)
 
     result = subprocess.run(bashCommand.split(), stdout=subprocess.PIPE)
@@ -91,7 +91,7 @@ def main():
 
 def load_data(data_dir):
     images = []
-    for filename in glob.glob(data_dir+"/*.ppm"):
+    for filename in glob.glob(data_dir+"/*.png"):
         images.append(skimage.data.imread(filename)) #Loads the images as a list of numpy arrays
 
     return images

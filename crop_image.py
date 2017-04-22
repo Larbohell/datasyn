@@ -22,10 +22,21 @@ def main(json_file_path):
 
         if score > 0.0:
 
-            wider = 0
-            new_image = image_to_crop.crop((r['x1']-wider, r['y1']-wider, r['x2']+wider, r['y2']+wider))
 
-            new_image = transform_image_to_square(new_image) #transform the image to square
+            diff_x = r['x2']-r['x1']
+            diff_y = r['y2']-r['y1']
+
+            if diff_x < diff_y:
+                wider_x = diff_y-diff_x + 10
+                wider_y = 10
+            else:
+                wider_y = diff_x - diff_y + 10
+                wider_x = 10
+
+
+            new_image = image_to_crop.crop((r['x1']-wider_x/2, r['y1']-wider_y/2, r['x2']+wider_x/2, r['y2']+wider_y/2))
+
+            #new_image = transform_image_to_square(new_image) #transform the image to square
             cropped_images.append(new_image)
 
     return cropped_images
