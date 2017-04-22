@@ -22,6 +22,7 @@ FILE_FORMAT = ".ppm" #The file format of the image(s) containing detected signs
 
 #Classification paths and filenames
 CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001"
+CLASSIFIED_IMAGES_SAVE_PATH = "output/BelgiumTS/2017_04_22_12.24_1001/classified_signs"
 
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
@@ -44,13 +45,14 @@ def main():
         i += 1
 
 
-    #Sign recognition
+    #SIGN RECOGNITION
     #Load images of detected signs from the TensorBox network
-    sign_images = load_data(ROOT_PATH +"/"+SAVE_CROPPED_IMG_PATH)
+    sign_images = load_data(SAVE_CROPPED_IMG_PATH)
 
     #Rescale
     sign_images_rescaled = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
                      for image in sign_images]
+
 
     #Classify sign type
     input_image_dimension = [IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y]
@@ -60,17 +62,16 @@ def main():
     # EVALUATING THE TEST
     #TODO:
 
-    timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M')
-    save_dir = 'output/' + DETECTED_SIGNS_DIR + '/predictions_' + timestamp
+    #timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H.%M')
 
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+    if not os.path.exists(CLASSIFIED_IMAGES_SAVE_PATH):
+        os.makedirs(CLASSIFIED_IMAGES_SAVE_PATH)
 
     i = 0
 
     for pl in predicted_labels:
-        predicted_image = sign_images_rescaled[i]
-        save_numpy_array_as_image(predicted_image, save_dir, '/label_' + str(pl) + '_' + str(i) + '.png')
+        predicted_image = cropped_images[i]
+        predicted_image.save(CLASSIFIED_IMAGES_SAVE_PATH + '/label_' + str(pl) + '_' + str(i) + '.png')
         i += 1
 
 def load_data(data_dir):
