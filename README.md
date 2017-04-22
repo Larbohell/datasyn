@@ -28,6 +28,7 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
 * Laste inn hidden layers
 * Finne accuracy for ulikt antall hidden layers og bestemme optimalt antall
 * Flere bilder fra live video feed sendes inn og kan brukes sammen + Random Forest på resultatene fra alle bildene
+* gray-scale
 
 ## Verdt å notere seg
 * Skiltfinneren leter ikke etter de samme skiltene som classifyeren vår
