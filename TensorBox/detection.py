@@ -71,11 +71,12 @@ def get_results(args, H):
         misc.imsave(imname, new_img)
 
     return pred_annolist
-def main():
+
+def main(weights, image_dir):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', required=True)
+    parser.add_argument('--weights', default=weights)
     parser.add_argument('--expname', default='')
-    parser.add_argument('--image_dir', required=True)
+    parser.add_argument('--image_dir', default=image_dir)
     parser.add_argument('--gpu', default=0)
     parser.add_argument('--logdir', default='output')
     parser.add_argument('--iou_threshold', default=0.5, type=float)
