@@ -18,8 +18,6 @@ def classify(test_images, model_dir, input_image_dim):
     checkpoint_dir = os.path.join("output", model_dir)
     saver.restore(session, tf.train.latest_checkpoint(checkpoint_dir))
 
-    print(len(test_images))
-
     # Create a graph to hold the model.
     graph = tf.get_default_graph()
 

@@ -21,10 +21,13 @@ JSON_FILE_PATH = "TensorBox/output/tensorbox_7500/save.ckpt-7500.test_boxes.json
 SAVE_CROPPED_IMG_PATH = "TensorBox/output/tensorbox_7500/cropped_images"
 FILE_FORMAT = ".ppm" #The file format of the image(s) containing detected signs
 
-#Classification paths and filenames
-CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001"
 DETECTION_MODEL = "trainedNetworks/TensorBoxNetworks/7500iter/save.ckpt-7500"
 EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
+
+
+
+#Classification paths and filenames
+CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001"
 CLASSIFIED_IMAGES_SAVE_PATH = "output/BelgiumTS/2017_04_22_12.24_1001/classified_signs"
 
 
@@ -39,7 +42,7 @@ def main():
     #os.system(bashCommand)
 
     result = subprocess.run(bashCommand.split(), stdout=subprocess.PIPE)
-    result.stdout.decode('utf-8')
+    print(result.stdout.decode('utf-8'))
 
         #TODO create a json-file and an image with detected signs
 

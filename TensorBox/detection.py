@@ -44,7 +44,7 @@ def get_results(args, H):
 
         print('Outputs will be stored in {}'.format(image_dir))
 
-        orig_img = imread('%s/%s' % (data_dir, "elgesetergate.png"))[:, :, :3]
+        orig_img = imread('%s/%s' % (data_dir, "00002.ppm"))[:, :, :3]
         img = imresize(orig_img, (H["image_height"], H["image_width"]), interp='cubic')
         feed = {x_in: img}
         (np_pred_boxes, np_pred_confidences) = sess.run([pred_boxes, pred_confidences], feed_dict=feed)
@@ -56,7 +56,7 @@ def get_results(args, H):
             print("Pred box nr. ", str(i), ": ", np_pred_box)
 
         pred_anno = al.Annotation()
-        pred_anno.imageName = "00420.ppm"
+        pred_anno.imageName = "00002.png"
         new_img, rects = add_rectangles(H, [img], np_pred_confidences, np_pred_boxes,
                                         use_stitching=True, rnn_len=H['rnn_len'], min_conf=args.min_conf, tau=args.tau,
                                         show_suppressed=args.show_suppressed)
@@ -74,9 +74,9 @@ def get_results(args, H):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', default=weights)
+    parser.add_argument('--weights', required=True)
     parser.add_argument('--expname', default='')
-    parser.add_argument('--image_dir', default=image_dir)
+    parser.add_argument('--image_dir', required=True)
     parser.add_argument('--gpu', default=0)
     parser.add_argument('--logdir', default='output')
     parser.add_argument('--iou_threshold', default=0.5, type=float)
@@ -91,7 +91,6 @@ def main():
         H = json.load(f)
     expname = args.expname + '_' if args.expname else ''
     pred_boxes = '%s.%s%s' % (args.weights, expname, os.path.basename(args.image_dir))
-
 
     pred_annolist = get_results(args, H)
     pred_annolist.save(pred_boxes)
@@ -110,3 +109,6 @@ def main():
     except Exception as e:
         print(e)
 """
+
+if __name__ == '__main__':
+    main()
