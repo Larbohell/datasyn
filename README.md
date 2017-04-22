@@ -21,14 +21,15 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
 * Funnet bildesegmenteringsAI
 * Skrive/lese nettverk til/fra fil 
 * Forbedre bildeklassiferingsAI med flere hidden layers i nettverket
+* Integrert system for å detektere og gjenkjenne
+* Preprocessed for forbedret deteksjon
 
 ## To do
-* Integrert system for segmentering og klassifisering av et enkelt bilde
 * Tidstest av segmentering og klassifisering av skilt
 * Laste inn hidden layers
 * Finne accuracy for ulikt antall hidden layers og bestemme optimalt antall
 * Flere bilder fra live video feed sendes inn og kan brukes sammen + Random Forest på resultatene fra alle bildene
-* gray-scale
+* Precision/recall stats
 
 ## Verdt å notere seg
 * Skiltfinneren leter ikke etter de samme skiltene som classifyeren vår
@@ -37,9 +38,9 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
 
 * Bildesegmentering for å finne skilt
 * Klassisk bildesegmentering som input
-    * Histogram-equalization
 * Fartsgrenseskilt: Skille mellom forskjellige fartsgrenser, kanskje konvertere bildet -> tall
 * Parallellisere bildesegmentering og skiltklassifisering
+* Random image morphing as data augmentation for every traning epoch
 
 ** Some possible improvements:
 * I would use Keras to define the network and its function ImageDataGenerator to generate augmented samples on the fly. Using more data could improve the performance of the model. In my case, I have generated an augmented dataset once, saved it on the disk and used it every time to train. It would be useful to generate randomly the dataset each time before the training.
