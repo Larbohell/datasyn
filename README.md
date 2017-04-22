@@ -16,9 +16,22 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
 
 4. Finn visualisering av evauleringen i output/overfeat_rezoom_<correct_folder>/images_val_boxes<numOfIterations>
 
-## To do
-* Skrive til fil, så nettverket ikke må trenes hver gang
+## Har gjort
+* Funnet bildeklassifiseringsAI
+* Funnet bildesegmenteringsAI
+* Skrive/lese nettverk til/fra fil 
+* Forbedre bildeklassiferingsAI med flere hidden layers i nettverket
 
+## To do
+* Integrert system for segmentering og klassifisering av et enkelt bilde
+* Tidstest av segmentering og klassifisering av skilt
+* Laste inn hidden layers
+* Finne accuracy for ulikt antall hidden layers og bestemme optimalt antall
+* Flere bilder fra live video feed sendes inn og kan brukes sammen + Random Forest på resultatene fra alle bildene
+* gray-scale
+
+## Verdt å notere seg
+* Skiltfinneren leter ikke etter de samme skiltene som classifyeren vår
 
 ### Forbedringsmuligheter
 
@@ -27,6 +40,12 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
     * Histogram-equalization
 * Fartsgrenseskilt: Skille mellom forskjellige fartsgrenser, kanskje konvertere bildet -> tall
 * Parallellisere bildesegmentering og skiltklassifisering
+
+** Some possible improvements:
+* I would use Keras to define the network and its function ImageDataGenerator to generate augmented samples on the fly. Using more data could improve the performance of the model. In my case, I have generated an augmented dataset once, saved it on the disk and used it every time to train. It would be useful to generate randomly the dataset each time before the training.
+* The confusion matrix gives us suggestions to improve the model (see section Confusion matrix). There are some classes with low precision or recall. It would be useful to try to add more data for these classes. For example, I would generate new samples for the class 19 (Dangerous curve to the left) since it has only 180 samples and the model.
+* The accuracy for the training set is 0.975. This means that the model is probably underfitting a little bit. I tried to make a deeper network (adding more layers) and increasing the number of filters but it was too slow to train it using the CPU only.
+* The model worked well with new images taken with my camera (100% of accuracy). It would be useful to test the model by using more complicated examples.
 
 
 ### Resources 
@@ -44,3 +63,9 @@ https://drive.google.com/file/d/0B1EcuNVaOt3QeU5xb2xzNUxpSWc/view?usp=sharing
 
 Loss and accuracy in tensorflow explained:
 http://stackoverflow.com/questions/34518656/how-to-interpret-loss-and-accuracy-for-a-machine-learning-model
+
+Tensorflow layers calculation
+https://www.tensorflow.org/get_started/mnist/mechanics
+
+Litt mer nøye dude
+http://jokla.me/robotics/traffic-signs/
