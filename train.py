@@ -8,8 +8,10 @@ import datetime
 import glob
 import time
 
-TRAINING_NUMBER = 101
-DISPLAY_FREQUENCY = 20
+TRAINING_NUMBER = 100
+DISPLAY_FREQUENCY = 10
+MODEL_DIR = "BelgiumTS/2017_04_21_22.05_1"
+CONTINUE_TRAINING_ON_MODEL = True
 
 #TRAINING_DATA_SET = "GTSRB"
 #TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
@@ -121,8 +123,18 @@ def train():
     train_images_a = np.array(train_images32)
     print("labels: ", labels_a.shape, "\nTrain images: ", train_images_a.shape)
 
-    # Create a graph to hold the model.
-    graph = tf.Graph()
+    if CONTINUE_TRAINING_ON_MODEL:
+        # Restore session and variables/nodes/weights
+        session = tf.Session()
+        meta_file = os.path.join("output", MODEL_DIR, "save.ckpt.meta")
+        saver = tf.train.import_meta_graph(meta_file)
+
+        checkpoint_dir = os.path.join("output", MODEL_DIR)
+        saver.restore(session, tf.train.latest_checkpoint(checkpoint_dir))
+        graph = tf.get_default_graph()
+    else:
+        # Create a graph to hold the model.
+        graph = tf.Graph()
 
     # Create model in the graph.
     with graph.as_default():
@@ -137,23 +149,39 @@ def train():
 
         # Fully connected layer.
         # Generates logits of size [None, 62]
-        hidden1 = tf.contrib.layers.fully_connected(images_flat, 100, tf.nn.relu)
-        hidden2 = tf.contrib.layers.fully_connected(hidden1, 100, tf.nn.relu)
-        logits = tf.contrib.layers.fully_connected(hidden2, 62, tf.nn.relu)
+        if CONTINUE_TRAINING_ON_MODEL:
+            weights_0 = tf.global_variables()[0]
+            biases_0 = tf.global_variables()[1]
+            weights_1 = tf.global_variables()[2]
+            biases_1 = tf.global_variables()[3]
+            weights_2 = tf.global_variables()[4]
+            biases_2 = tf.global_variables()[5]
+
+            hidden1 = tf.nn.relu(tf.matmul(images_flat, weights_0) + biases_0)
+            hidden2 = tf.nn.relu(tf.matmul(hidden1, weights_1) + biases_1)
+            logits = tf.nn.relu(tf.matmul(hidden2, weights_2) + biases_2)
+
+            #loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph))
+            loss = graph.get_tensor_by_name("Loss")
+            train = graph.get_operation_by_name("Adam")
+            print(train)
+            #train = adam.minimize(loss)
+        else:
+            hidden1 = tf.contrib.layers.fully_connected(images_flat, 100, tf.nn.relu)
+            hidden2 = tf.contrib.layers.fully_connected(hidden1, 100, tf.nn.relu)
+            logits = tf.contrib.layers.fully_connected(hidden2, 62, tf.nn.relu)
+
+            # Define the loss function.
+            # Cross-entropy is a good choice for classification.
+            loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph), name = "Loss")
+            # Create training op.
+            adam = tf.train.AdamOptimizer(learning_rate=0.001, name = "Adam")
+            train = adam.minimize(loss)
+            print(train)
 
         # Convert logits to label indexes (int).
         # Shape [None], which is a 1D vector of length == batch_size.
         predicted_labels = tf.argmax(logits, 1)
-
-        # Define the loss function.
-        # Cross-entropy is a good choice for classification.
-        loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph))
-
-        # Create training op.
-        train = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
-
-        # And, finally, an initialization op to execute before training.
-        init = tf.global_variables_initializer()
 
         print("images_flat: ", images_flat)
         print("logits: ", logits)
@@ -161,12 +189,16 @@ def train():
         print("predicted_labels: ", predicted_labels)
         print("images_ph: ", images_ph)
 
-        # Create a session to run the graph we created.
-        session = tf.Session(graph=graph)
+        if not CONTINUE_TRAINING_ON_MODEL:
+            # And, finally, an initialization op to execute before training.
+            init = tf.global_variables_initializer()
 
-        # First step is always to initialize all variables.
-        # We don't care about the return value, though. It's None.
-        _ = session.run([init])
+            # Create a session to run the graph we created.
+            session = tf.Session(graph=graph)
+
+            # First step is always to initialize all variables.
+            # We don't care about the return value, though. It's None.
+            _ = session.run([init])
 
         #The actual training
         start = time.time()
