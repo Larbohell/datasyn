@@ -9,10 +9,18 @@ import datetime
 
 #import TensorBox/evaluate
 import classification
+import crop_image
 
 ROOT_PATH = "output"
-IMAGE = "datasets/detection/TestIJCNN2013/00103.ppm"
-DETECTED_SIGNS_DIR = "FromTensorBox/detected_signs"
+IMAGE_NAME = "00420.ppm"
+
+#Detection paths and filenames
+DETECTION_MODEL_DIR = "TensorBox/output/tensorbox_7500"
+JSON_FILE_PATH = "TensorBox/output/tensorbox_7500/save.ckpt-7500.test_boxes.json"
+SAVE_CROPPED_IMG_PATH = "TensorBox/output/tensorbox_7500/cropped_images"
+FILE_FORMAT = ".ppm" #The file format of the image(s) containing detected signs
+
+#Classification paths and filenames
 CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001"
 
 IMAGE_SCALE_SIZE_X = 32
@@ -20,11 +28,25 @@ IMAGE_SCALE_SIZE_Y = 32
 
 def main():
     #Sign detection
-        #DO STUFF, save detected signs into DETECTED_SIGNS_DIR
+        #TODO create a json-file and an image with detected signs
+
+
+    #Crop signs out of the images gotten from detection
+    cropped_images = crop_image.main(JSON_FILE_PATH)
+
+    # Check if folder exists. If not, create
+    if not os.path.exists(SAVE_CROPPED_IMG_PATH):
+        os.makedirs(SAVE_CROPPED_IMG_PATH)
+
+    i = 0
+    for image in cropped_images:
+        image.save(SAVE_CROPPED_IMG_PATH + "/cropped_image_" + str(i) + FILE_FORMAT)
+        i += 1
+
 
     #Sign recognition
     #Load images of detected signs from the TensorBox network
-    sign_images = load_data(ROOT_PATH +"/"+DETECTED_SIGNS_DIR)
+    sign_images = load_data(ROOT_PATH +"/"+SAVE_CROPPED_IMG_PATH)
 
     #Rescale
     sign_images_rescaled = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
