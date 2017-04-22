@@ -6,6 +6,7 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 import datetime
+import subprocess
 
 #import TensorBox/evaluate
 import classification
@@ -14,13 +15,20 @@ ROOT_PATH = "output"
 IMAGE = "datasets/detection/TestIJCNN2013/00103.ppm"
 DETECTED_SIGNS_DIR = "FromTensorBox/detected_signs"
 CLASSIFICATION_MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001"
+DETECTION_MODEL = "trainedNetworks/TensorBoxNetworks/7500iter/save.ckpt-7500"
+EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
 
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
 def main():
     #Sign detection
-        #DO STUFF, save detected signs into DETECTED_SIGNS_DIR
+
+    bashCommand = "python TensorBox/detection.py --weights " + DETECTION_MODEL + " --image_dir " + EMPTY_JSON_FILE
+    #os.system(bashCommand)
+
+    result = subprocess.run(bashCommand.split(), stdout=subprocess.PIPE)
+    result.stdout.decode('utf-8')
 
     #Sign recognition
     #Load images of detected signs from the TensorBox network
