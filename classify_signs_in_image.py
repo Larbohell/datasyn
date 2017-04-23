@@ -21,7 +21,6 @@ TEST_DATA_DIR = "datasets/detection/single_image"
 #LABEL_TYPE = "Belgium_TS"
 LABEL_TYPE = "" # Prints numerical lable instead of text label
 
-
 #Detection paths and filenames
 DETECTION_MODEL_DIR = "trainedNetworks/TensorBoxNetworks/7500iter"
 JSON_FILE_PATH = DETECTION_MODEL_DIR + "/save.ckpt-7500.val_boxes.json"
@@ -34,12 +33,8 @@ DETECTION_MODEL = DETECTION_MODEL_DIR + "/save.ckpt-7500"
 
 EMPTY_JSON_FILE = TEST_DATA_DIR + "/val_boxes.json"
 
-
 #Classification paths and filenames
-#CLASSIFICATION_MODEL_DIR = "trainedNetworks/ClassificationNetworks/1001iter_72acc"
-
-#CLASSIFICATION_MODEL_DIR = "output/BelgiumTS/2017_04_23_00.55_300"
-CLASSIFICATION_MODEL_DIR = "trainedNetworks/ClassificationNetworks/grayscale_GTSRB_1001iter_921acc"
+CLASSIFICATION_MODEL_DIR = "trainedNetworks\ClassificationNetworks\grayscale_GTSRB_1001iter_921acc"
 CLASSIFIED_IMAGES_SAVE_PATH = CLASSIFICATION_MODEL_DIR + "/classified_signs"
 
 
@@ -128,6 +123,7 @@ def detect_and_classify(image_name, iter):
         predicted_image_rgb = sign_images[i]
 
         predicted_image.shape = (32,32);
+
         if LABEL_TYPE == "BelgiumTS":
             sign_type = label_to_type_BelgiumTS[pl]
         elif LABEL_TYPE == "GTSRB":
