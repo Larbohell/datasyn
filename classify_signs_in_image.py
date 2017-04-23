@@ -17,9 +17,9 @@ import classification
 import crop_image
 
 TEST_DATA_DIR = "datasets/detection/single_image"
-#LABEL_TYPE = "GTSRB"
+LABEL_TYPE = "GTSRB"
 #LABEL_TYPE = "Belgium_TS"
-LABEL_TYPE = "" # Prints numerical lable instead of text label
+#LABEL_TYPE = "" # Prints numerical lable instead of text label
 
 #Detection paths and filenames
 DETECTION_MODEL_DIR = "trainedNetworks/TensorBoxNetworks/7500iter"
@@ -225,46 +225,46 @@ label_to_type_GTSRB = {
     0: "fartsgrense_20",
     1: "fartsgrense_30",
     2: "fartsgrense_50",
-    3: "fartsgrense_uvisst",
-    4: "fartsgrense_uvisst",
+    3: "fartsgrense_60",
+    4: "fartsgrense_70",
     5: "fartsgrense_80",
-    6: "fartsgrense_90",
-    7: "fartsgrense_uvisst",
+    6: "fartsgrense_80_slutt",
+    7: "fartsgrense_100",
     8: "fartsgrense_120",
     9: "forbud_forbikjøring",
     10: "fartsgrense_forbikjøring_lastebil",
-    11: "fare_uvisst",
+    11: "fare_forkjørskryss",
     12: "forkjørsveg",
-    13: "uvisst",
+    13: "vikeplikt",
     14: "stopp",
-    15: "uvisst",
+    15: "forbud_blank",
     16: "forbud_lastebil",
     17: "forbud_innkjøring",
-    18: "uvisst",
-    19: "uvisst",
-    20: "uvisst",
-    21: "fare_dyr",
+    18: "fare_utropstegn",
+    19: "fare_venstresving",
+    20: "fare_høyresving",
+    21: "fare_svingete_venstre",
     22: "fare_dump",
-    23: "fare_uvisst",
-    24: "fare_uvisst",
+    23: "fare_glatt",
+    24: "fare_smal_på_høyre",
     25: "fare_veiarbeid",
-    26: "fare_uvisst",
-    27: "fare_menneske",
+    26: "fare_traffiklys",
+    27: "fare_fotgjengere",
     28: "fare_forelder_og_barn",
-    29: "fare_uvisst",
-    30: "fare_uvisst",
+    29: "fare_sykkel",
+    30: "fare_snø",
     31: "fare_hjort",
-    32: "forbud_uvisst",
-    33: "forbud_uvisst",
+    32: "forbud_blank_slutt",
+    33: "påbud_sving_høyre",
     34: "påbud_sving_venstre",
     35: "påbud_kjør_rett_frem",
     36: "påbud_rett_frem_eller_høyre",
     37: "påbud_rett_frem_eller_venstre",
-    38: "påbud_høyre_felt",
-    39: "påbud_venstre_felt",
+    38: "påbud_hold_høyre",
+    39: "påbud_hold_venstre",
     40: "rundkjøring",
-    41: "forbud_uvisst",
-    42: "forbud_uvisst"
+    41: "forbud_forbikjøring_slutt",
+    42: "forbud_lastebil_slutt"
 }
 
 main()
