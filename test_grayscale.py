@@ -10,8 +10,8 @@ import glob
 import cv2
 
 #MODEL_DIR = "Training_test_small_set/2017_04_23_11.57_1000" #"BelgiumTS/2017_04_18_17.57"
-#MODEL_DIR = "GTSRB/2017_04_23_13.07_1001"
-MODEL_DIR = "trainedNetworks/ClassificationNetworks/grayscale_GTSRB_1001iter_trainLoss_0.326"
+MODEL_DIR = "output/GTSRB/2017_04_23_15.35_501"
+#MODEL_DIR = "trainedNetworks/ClassificationNetworks/grayscale_GTSRB_1001iter_trainLoss_0.326"
 #TEST_DATA_SET = "BelgiumTS"
 #TEST_DATA_SET = "Training_test_small_set"
 TEST_DATA_SET = "GTSRB"

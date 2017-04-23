@@ -10,24 +10,32 @@ import datetime
 import glob
 import time
 
-TRAINING_NUMBER = 1000
-DISPLAY_FREQUENCY = 10
+TRAINING_NUMBER = 501
+DISPLAY_FREQUENCY = 50
 MODEL_DIR = "BelgiumTS/2017_04_22_17.34_20"
 #MODEL_DIR = "Training_test_small_set/2017_04_22_17.27_100"
 CONTINUE_TRAINING_ON_MODEL = False
 
-#TRAINING_DATA_SET = "GTSRB"
 #TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
 #TRAINING_DATA_SET = "BelgiumTS"
-TRAINING_DATA_SET = "Training_test_small_set"
+TRAINING_DATA_SET = "GTSRB"
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
 def main():
     start_time = time.time()
-    train()
+    train_loss_a, display_iter = train()
+    display_train_loss(display_iter, train_loss_a)
     end_time = time.time()
     print ("Total time elapsed: ", (end_time-start_time))
+
+def display_train_loss(x,y):
+    plt.figure()
+    plt.plot(x,y)
+    plt.ylabel('Train loss')
+    plt.xlabel('Number of iterations')
+    plt.grid(True)
+    plt.show()
 
 def load_train_data(data_dir):
     """Loads a data set and returns two lists:
@@ -230,12 +238,16 @@ def train():
         #The actual training
         start = time.time()
         loss_value = None
+        train_loss_a = []
+        display_iter = []
 
         for i in range(TRAINING_NUMBER):
             _, loss_value = session.run([train, loss],
                                         feed_dict={images_ph: train_images_a, labels_ph: labels_a})
             if i % DISPLAY_FREQUENCY == 0:
                 print("Iter: " + str(i) +", Loss: ", loss_value, ", Time elapsed: ", time.time()-start)
+                train_loss_a.append(loss_value)
+                display_iter.append(i)
 
         print("Iter: " + str(TRAINING_NUMBER-1) + ", Loss: ", loss_value, ", Time elapsed: ", time.time() - start)
 
@@ -244,5 +256,7 @@ def train():
         # Close the session. This will destroy the trained model.
         session.close()
         print("Model saved.")
+
+        return train_loss_a, display_iter
 
 main()
