@@ -55,14 +55,5 @@ https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391
 Machine learning/CNN guide:
 https://medium.com/@ageitgey/machine-learning-is-fun-part-3-deep-learning-and-convolutional-neural-networks-f40359318721#.r6cklogiy
 
-Walkthrough of tensor flow with small ANN. See task 2 (ML-course assignment 4 - Johan):
-https://drive.google.com/file/d/0B1EcuNVaOt3QeU5xb2xzNUxpSWc/view?usp=sharing
-
-Loss and accuracy in tensorflow explained:
-http://stackoverflow.com/questions/34518656/how-to-interpret-loss-and-accuracy-for-a-machine-learning-model
-
-Tensorflow layers calculation
-https://www.tensorflow.org/get_started/mnist/mechanics
-
 Bedre classifier med pre-processing
 http://jokla.me/robotics/traffic-signs/
