@@ -2,6 +2,8 @@ import glob
 import os
 import skimage.data
 import skimage.transform
+import skimage.exposure as exposure
+import cv2
 import numpy as np
 import tensorflow as tf
 from PIL import Image
@@ -31,7 +33,8 @@ EMPTY_JSON_FILE = "datasets/theGrandTestSet/val_boxes.json"
 
 
 #Classification paths and filenames
-CLASSIFICATION_MODEL_DIR = "trainedNetworks/ClassificationNetworks/1001iter_72acc"
+#CLASSIFICATION_MODEL_DIR = "trainedNetworks/ClassificationNetworks/1001iter_72acc"
+CLASSIFICATION_MODEL_DIR = "output/BelgiumTS/2017_04_23_00.55_300"
 CLASSIFIED_IMAGES_SAVE_PATH = CLASSIFICATION_MODEL_DIR + "/classified_signs"
 
 
@@ -49,6 +52,14 @@ def main():
         print("Detect and recognize iter = ", i)
         i += 1
 
+def pre_process_single_img(img):
+    img_y = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)[:,:,0]
+    img_y = (img_y/255).astype(np.float32)
+    img_y = (exposure.equalize_adapthist(img_y,) - 0.5)
+    return img_y
+
+def add_dimension(img):
+    return img.reshape(img.shape + (1,))
 
 def detect_and_classify(image_name, iter):
     # Sign detection
@@ -81,11 +92,14 @@ def detect_and_classify(image_name, iter):
     sign_images = load_data(SAVE_CROPPED_IMG_PATH)
 
     # Rescale
-    sign_images_rescaled = [skimage.transform.resize(image, (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
+    sign_images_rescaled = [skimage.transform.resize(pre_process_single_img(image), (IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y))
                             for image in sign_images]
+
+    sign_images_rescaled = [add_dimension(image) for image in sign_images_rescaled]
 
     # Classify sign type
     input_image_dimension = [IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y]
+
 
     predicted_labels = classification.classify(sign_images_rescaled, CLASSIFICATION_MODEL_DIR, input_image_dimension)
 
@@ -100,6 +114,7 @@ def detect_and_classify(image_name, iter):
 
     for pl in predicted_labels:
         predicted_image = sign_images_rescaled[i]
+        predicted_image.shape = (32,32);
         save_numpy_array_as_image(predicted_image,CLASSIFIED_IMAGES_SAVE_PATH,'/label_' + str(pl) + '_' + str(i) + "_" + str(iter) + '.png')
         #predicted_image.save(CLASSIFIED_IMAGES_SAVE_PATH + '/label_' + str(pl) + '_' + str(i) + '.png')
         i += 1

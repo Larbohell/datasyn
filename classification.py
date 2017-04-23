@@ -23,7 +23,7 @@ def classify(test_images, model_dir, input_image_dim):
 
     with graph.as_default():
         # Placeholders for inputs and labels.
-        images_ph = tf.placeholder(tf.float32, [None, input_image_dim[0], input_image_dim[1], 3])
+        images_ph = tf.placeholder(tf.float32, [None, input_image_dim[0], input_image_dim[1], 1])
 
         # Flatten input from: [None, height, width, channels]
         # To: [None, height * width * channels] == [None, 3072]
