@@ -51,9 +51,9 @@ def classify(test_images, model_dir, input_image_dim):
                             feed_dict={images_ph: test_images})[0]
     end_time = time.time()
 
-    with open("timing.txt", "a") as timerfile:
-        prediction_time = end_time - start_time
-        timerfile.write(prediction_time)
+    with open("timing_classification.txt", "a") as timerfile:
+        classification_time = end_time - start_time
+        timerfile.write(classification_time)
         timerfile.write("\n")
 
     return predicted
