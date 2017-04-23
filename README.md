@@ -48,6 +48,8 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
 * The accuracy for the training set is 0.975. This means that the model is probably underfitting a little bit. I tried to make a deeper network (adding more layers) and increasing the number of filters but it was too slow to train it using the CPU only.
 * The model worked well with new images taken with my camera (100% of accuracy). It would be useful to test the model by using more complicated examples.
 
+### Datasets
+GTSRB: http://benchmark.ini.rub.de/?section=gtsrb&subsection=dataset#Downloads
 
 ### Resources 
 Traffic sign recognition with tensorflow-tutorial:
