@@ -115,7 +115,10 @@ def detect_and_classify(image_name, iter):
     for pl in predicted_labels:
         predicted_image = sign_images_rescaled[i]
         predicted_image.shape = (32,32);
-        save_numpy_array_as_image(predicted_image,CLASSIFIED_IMAGES_SAVE_PATH,'/label_' + str(pl) + '_' + str(i) + "_" + str(iter) + '.png')
+        type = label_to_type[pl]
+        #save_numpy_array_as_image(predicted_image,CLASSIFIED_IMAGES_SAVE_PATH,'/label_' + str(pl) + '_' + str(i) + "_" + str(iter) + '.png')
+        save_numpy_array_as_image(predicted_image, CLASSIFIED_IMAGES_SAVE_PATH, '/label_' + type + '_' + str(i) + "_" + str(iter) + '.png')
+
         #predicted_image.save(CLASSIFIED_IMAGES_SAVE_PATH + '/label_' + str(pl) + '_' + str(i) + '.png')
         i += 1
 
@@ -138,5 +141,70 @@ def save_numpy_array_as_image(array, save_dir, filename):
 
     im = Image.fromarray(rescaled)
     im.save(save_dir + filename)
+
+label_to_type = {
+    0: "fare_dump",
+    1: "fare_hump",
+    2: "fare_glatt",
+    3: "fare_venstresving",
+    4: "fare_høyresving",
+    5: "fare_svingete_venstre",
+    6: "fare_svingete_høyre",
+    7: "fare_barn_og_mor",
+    8: "fare_syklende",
+    9: "fare_dyr",
+    10: "fare_veiarbeid",
+    11: "fare_traffiklys",
+    12: "fare_grind",
+    13: "fare_utropstegn",
+    14: "fare_smal_veg",
+    15: "fare_smal_venstre",
+    16: "fare_smal_høyre",
+    17: "fare_forkjørsveg",
+    18: "fare_kryss",
+    19: "fare_vikeplikt",
+    20: "fare_vikteplikt_for_motgående",
+    21: "stopp",
+    22: "forbud_innkjøring_forbudt",
+    23: "forbud_sykkel",
+    24: "forbud_vekt",
+    25: "forbud_lastebil",
+    26: "forbud_bredde",
+    27: "forbud_lengde",
+    28: "forbud_blank",
+    29: "forbud_venstresving",
+    30: "forbud_høyresving",
+    31: "forbud_forbikjøring",
+    32: "forbud_fart",
+    33: "påbud_gående_syklende",
+    34: "påbud_kjør_rett_frem",
+    35: "påbud_mot_venstre",
+    36: "påbud_rett_frem_eller_høyre",
+    37: "påbud_rundkjøring",
+    38: "påbud_sykkel",
+    39: "påbud_syklende_gående",
+    40: "forbud_parkering",
+    41: "forbud_stopp",
+    42: "forbud_parkering_tid_15",
+    43: "forbud_parkering_tid_31",
+    44: "info_motgående_viker",
+    45: "info_parkering",
+    46: "info_parkering_rullestol",
+    47: "info_parkering_bil",
+    48: "info_parkering_lastebil",
+    49: "info_parkering_buss",
+    50: "info_parkering_båt",
+    51: "info_gatetun",
+    52: "info_gatetun_slutt",
+    53: "info_kjør_rett_frem",
+    54: "info_blindvei",
+    55: "info_troll",
+    56: "info_fotgjengerfelt",
+    57: "info_syklende",
+    58: "info_parkering_inn_her",
+    59: "info_partshump",
+    60: "info_forkjørsvei_slutt",
+    61: "info_forkjørsvei"
+}
 
 main()
