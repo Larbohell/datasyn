@@ -49,12 +49,13 @@ def get_results(args, H):
         img = imresize(orig_img, (H["image_height"], H["image_width"]), interp='cubic')
         feed = {x_in: img}
         (np_pred_boxes, np_pred_confidences) = sess.run([pred_boxes, pred_confidences], feed_dict=feed)
-        print("np_pred_boxes: ", np_pred_boxes)
-        print(len(np_pred_boxes))
-        print(len(np_pred_boxes[0]))
-        for i in range(len(np_pred_boxes)):
-            np_pred_box = np_pred_boxes[i]
-            print("Pred box nr. ", str(i), ": ", np_pred_box)
+
+        #print("np_pred_boxes: ", np_pred_boxes)
+        #print(len(np_pred_boxes))
+        #print(len(np_pred_boxes[0]))
+        #for i in range(len(np_pred_boxes)):
+        #    np_pred_box = np_pred_boxes[i]
+        #    print("Pred box nr. ", str(i), ": ", np_pred_box)
 
         pred_anno = al.Annotation()
         pred_anno.imageName = args.image_name
