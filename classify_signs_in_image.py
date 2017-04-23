@@ -21,23 +21,25 @@ TEST_DATA_DIR = "datasets/detection/single_image"
 #LABEL_TYPE = "Belgium_TS"
 LABEL_TYPE = "" # Prints numerical lable instead of text label
 
+
 #Detection paths and filenames
 DETECTION_MODEL_DIR = "trainedNetworks/TensorBoxNetworks/7500iter"
 JSON_FILE_PATH = DETECTION_MODEL_DIR + "/save.ckpt-7500.val_boxes.json"
-#IMAGE_NAME = "elgesetergate.png"
-#IMAGE_NAME = "00023.ppm"
+
 
 SAVE_CROPPED_IMG_PATH = DETECTION_MODEL_DIR + "/cropped_images"
-FILE_FORMAT = ".ppm" #The file format of the image(s) containing detected signs
+FILE_FORMAT = ".png" #The file format of the image(s) containing detected signs
 
 DETECTION_MODEL = DETECTION_MODEL_DIR + "/save.ckpt-7500"
-#EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
-EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
+
+EMPTY_JSON_FILE = TEST_DATA_DIR + "/val_boxes.json"
 
 
 #Classification paths and filenames
 #CLASSIFICATION_MODEL_DIR = "trainedNetworks/ClassificationNetworks/1001iter_72acc"
-CLASSIFICATION_MODEL_DIR = "trainedNetworks\ClassificationNetworks\1001iter_72acc"
+
+#CLASSIFICATION_MODEL_DIR = "output/BelgiumTS/2017_04_23_00.55_300"
+CLASSIFICATION_MODEL_DIR = "trainedNetworks/ClassificationNetworks/grayscale_GTSRB_1001iter_921acc"
 CLASSIFIED_IMAGES_SAVE_PATH = CLASSIFICATION_MODEL_DIR + "/classified_signs"
 
 
@@ -123,6 +125,8 @@ def detect_and_classify(image_name, iter):
 
     for pl in predicted_labels:
         predicted_image = sign_images_rescaled[i]
+        predicted_image_rgb = sign_images[i]
+
         predicted_image.shape = (32,32);
         if LABEL_TYPE == "BelgiumTS":
             sign_type = label_to_type_BelgiumTS[pl]
@@ -130,10 +134,11 @@ def detect_and_classify(image_name, iter):
             sign_type = label_to_type_GTSRB[pl]
         else:
             sign_type = str(pl)
-        #save_numpy_array_as_image(predicted_image,CLASSIFIED_IMAGES_SAVE_PATH,'/label_' + str(pl) + '_' + str(i) + "_" + str(iter) + '.png')
+
         save_numpy_array_as_image(predicted_image, CLASSIFIED_IMAGES_SAVE_PATH, '/label_' + sign_type + '_' + str(i) + "_" + str(iter) + '.png')
 
-        #predicted_image.save(CLASSIFIED_IMAGES_SAVE_PATH + '/label_' + str(pl) + '_' + str(i) + '.png')
+        save_numpy_array_as_image(predicted_image_rgb, CLASSIFIED_IMAGES_SAVE_PATH, '/label_' + sign_type + '_' + str(i) + "_" + str(iter) + 'RGB.png')
+
         i += 1
 
     print("SIGN RECOGNITION DONE")
