@@ -11,6 +11,7 @@ from utils.train_utils import add_rectangles, rescale_boxes
 
 import cv2
 import argparse
+import time
 
 def get_image_dir(args):
     weights_iteration = int(args.weights.split('-')[-1])
@@ -44,6 +45,8 @@ def get_results(args, H):
 
         print('Outputs will be stored in {}'.format(image_dir))
 
+        start_time = time.time()
+
         orig_img = imread('%s/%s' % (data_dir, args.image_name))[:, :, :3]
 
         img = imresize(orig_img, (H["image_height"], H["image_width"]), interp='cubic')
@@ -71,6 +74,12 @@ def get_results(args, H):
 
         imname = '%s/%s' % (image_dir, os.path.basename(pred_anno.imageName))
         misc.imsave(imname, new_img)
+        end_time = time.time()
+
+        with open("timing_detection.txt", "a") as timerfile:
+            detection_time = end_time - start_time
+            timerfile.write(detection_time)
+            timerfile.write("\n")
 
     return pred_annolist
 

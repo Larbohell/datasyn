@@ -10,31 +10,34 @@ from PIL import Image
 import datetime
 import subprocess
 import shutil
+import time
 
 #import TensorBox/evaluate
 import classification
 import crop_image
 
-TEST_DATA_DIR = "datasets/theGrandTestSet"
+TEST_DATA_DIR = "datasets/detection/single_image"
+#LABEL_TYPE = "GTSRB"
+#LABEL_TYPE = "Belgium_TS"
+LABEL_TYPE = "" # Prints numerical lable instead of text label
 
 #Detection paths and filenames
 DETECTION_MODEL_DIR = "trainedNetworks/TensorBoxNetworks/7500iter"
 JSON_FILE_PATH = DETECTION_MODEL_DIR + "/save.ckpt-7500.val_boxes.json"
 #IMAGE_NAME = "elgesetergate.png"
-IMAGE_NAME = "00023.ppm"
-
+#IMAGE_NAME = "00023.ppm"
 
 SAVE_CROPPED_IMG_PATH = DETECTION_MODEL_DIR + "/cropped_images"
 FILE_FORMAT = ".ppm" #The file format of the image(s) containing detected signs
 
 DETECTION_MODEL = DETECTION_MODEL_DIR + "/save.ckpt-7500"
 #EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
-EMPTY_JSON_FILE = "datasets/theGrandTestSet/val_boxes.json"
+EMPTY_JSON_FILE = "datasets/detection/single_image/val_boxes.json"
 
 
 #Classification paths and filenames
 #CLASSIFICATION_MODEL_DIR = "trainedNetworks/ClassificationNetworks/1001iter_72acc"
-CLASSIFICATION_MODEL_DIR = "output/BelgiumTS/2017_04_23_00.55_300"
+CLASSIFICATION_MODEL_DIR = "trainedNetworks\ClassificationNetworks\1001iter_72acc"
 CLASSIFIED_IMAGES_SAVE_PATH = CLASSIFICATION_MODEL_DIR + "/classified_signs"
 
 
@@ -74,6 +77,7 @@ def detect_and_classify(image_name, iter):
 
     print("CROPPING IMAGES")
     # Crop signs out of the images gotten from detection
+    start_time = time.time()
     cropped_images = crop_image.main(JSON_FILE_PATH)
 
     # Check if folder exists. If not, create
@@ -99,7 +103,12 @@ def detect_and_classify(image_name, iter):
 
     # Classify sign type
     input_image_dimension = [IMAGE_SCALE_SIZE_X, IMAGE_SCALE_SIZE_Y]
+    end_time = time.time()
 
+    with open("timing_processing.txt", "a") as timerfile:
+        processing_time = end_time - start_time
+        timerfile.write(processing_time)
+        timerfile.write("\n")
 
     predicted_labels = classification.classify(sign_images_rescaled, CLASSIFICATION_MODEL_DIR, input_image_dimension)
 
@@ -115,9 +124,14 @@ def detect_and_classify(image_name, iter):
     for pl in predicted_labels:
         predicted_image = sign_images_rescaled[i]
         predicted_image.shape = (32,32);
-        type = label_to_type[pl]
+        if LABEL_TYPE == "BelgiumTS":
+            sign_type = label_to_type_BelgiumTS[pl]
+        elif LABEL_TYPE == "GTSRB":
+            sign_type = label_to_type_GTSRB[pl]
+        else:
+            sign_type = str(pl)
         #save_numpy_array_as_image(predicted_image,CLASSIFIED_IMAGES_SAVE_PATH,'/label_' + str(pl) + '_' + str(i) + "_" + str(iter) + '.png')
-        save_numpy_array_as_image(predicted_image, CLASSIFIED_IMAGES_SAVE_PATH, '/label_' + type + '_' + str(i) + "_" + str(iter) + '.png')
+        save_numpy_array_as_image(predicted_image, CLASSIFIED_IMAGES_SAVE_PATH, '/label_' + sign_type + '_' + str(i) + "_" + str(iter) + '.png')
 
         #predicted_image.save(CLASSIFIED_IMAGES_SAVE_PATH + '/label_' + str(pl) + '_' + str(i) + '.png')
         i += 1
@@ -142,7 +156,7 @@ def save_numpy_array_as_image(array, save_dir, filename):
     im = Image.fromarray(rescaled)
     im.save(save_dir + filename)
 
-label_to_type = {
+label_to_type_BelgiumTS = {
     0: "fare_dump",
     1: "fare_hump",
     2: "fare_glatt",
@@ -205,6 +219,52 @@ label_to_type = {
     59: "info_partshump",
     60: "info_forkjørsvei_slutt",
     61: "info_forkjørsvei"
+}
+
+label_to_type_GTSRB = {
+    0: "fartsgrense_20",
+    1: "fartsgrense_30",
+    2: "fartsgrense_50",
+    3: "fartsgrense_uvisst",
+    4: "fartsgrense_uvisst",
+    5: "fartsgrense_80",
+    6: "fartsgrense_90",
+    7: "fartsgrense_uvisst",
+    8: "fartsgrense_120",
+    9: "forbud_forbikjøring",
+    10: "fartsgrense_forbikjøring_lastebil",
+    11: "fare_uvisst",
+    12: "forkjørsveg",
+    13: "uvisst",
+    14: "stopp",
+    15: "uvisst",
+    16: "forbud_lastebil",
+    17: "forbud_innkjøring",
+    18: "uvisst",
+    19: "uvisst",
+    20: "uvisst",
+    21: "fare_dyr",
+    22: "fare_dump",
+    23: "fare_uvisst",
+    24: "fare_uvisst",
+    25: "fare_veiarbeid",
+    26: "fare_uvisst",
+    27: "fare_menneske",
+    28: "fare_forelder_og_barn",
+    29: "fare_uvisst",
+    30: "fare_uvisst",
+    31: "fare_hjort",
+    32: "forbud_uvisst",
+    33: "forbud_uvisst",
+    34: "påbud_sving_venstre",
+    35: "påbud_kjør_rett_frem",
+    36: "påbud_rett_frem_eller_høyre",
+    37: "påbud_rett_frem_eller_venstre",
+    38: "påbud_høyre_felt",
+    39: "påbud_venstre_felt",
+    40: "rundkjøring",
+    41: "forbud_uvisst",
+    42: "forbud_uvisst"
 }
 
 main()
