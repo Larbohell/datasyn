@@ -6,6 +6,7 @@ import tensorflow as tf
 from PIL import Image
 import datetime
 import glob
+import time
 
 def classify(test_images, model_dir, input_image_dim):
     # Load training and testing datasets.
@@ -45,7 +46,14 @@ def classify(test_images, model_dir, input_image_dim):
         predicted_labels = tf.argmax(logits, 1)
 
     # Run predictions against the full test set.
+    start_time = time.time()
     predicted = session.run([predicted_labels],
                             feed_dict={images_ph: test_images})[0]
+    end_time = time.time()
+
+    with open("timing.txt", "a") as timerfile:
+        prediction_time = end_time - start_time
+        timerfile.write(prediction_time)
+        timerfile.write("\n")
 
     return predicted
