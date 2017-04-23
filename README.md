@@ -42,12 +42,6 @@ http://russellsstewart.com/s/tensorbox/inception_v1.ckpt
 * Parallellisere bildesegmentering og skiltklassifisering
 * Random image morphing as data augmentation for every traning epoch
 
-** Some possible improvements:
-* I would use Keras to define the network and its function ImageDataGenerator to generate augmented samples on the fly. Using more data could improve the performance of the model. In my case, I have generated an augmented dataset once, saved it on the disk and used it every time to train. It would be useful to generate randomly the dataset each time before the training.
-* The confusion matrix gives us suggestions to improve the model (see section Confusion matrix). There are some classes with low precision or recall. It would be useful to try to add more data for these classes. For example, I would generate new samples for the class 19 (Dangerous curve to the left) since it has only 180 samples and the model.
-* The accuracy for the training set is 0.975. This means that the model is probably underfitting a little bit. I tried to make a deeper network (adding more layers) and increasing the number of filters but it was too slow to train it using the CPU only.
-* The model worked well with new images taken with my camera (100% of accuracy). It would be useful to test the model by using more complicated examples.
-
 ### Datasets
 GTSRB: http://benchmark.ini.rub.de/?section=gtsrb&subsection=dataset#Downloads
 
