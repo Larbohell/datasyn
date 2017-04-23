@@ -14,10 +14,10 @@ MODEL_DIR = "BelgiumTS/2017_04_22_17.34_20"
 #MODEL_DIR = "Training_test_small_set/2017_04_22_17.27_100"
 CONTINUE_TRAINING_ON_MODEL = False
 
-#TRAINING_DATA_SET = "GTSRB"
+TRAINING_DATA_SET = "GTSRB"
 #TRAINING_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
 #TRAINING_DATA_SET = "BelgiumTS"
-TRAINING_DATA_SET = "Training_test_small_set"
+#TRAINING_DATA_SET = "Training_test_small_set"
 IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 

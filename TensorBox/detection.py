@@ -78,7 +78,7 @@ def get_results(args, H):
 
         with open("timing_detection.txt", "a") as timerfile:
             detection_time = end_time - start_time
-            timerfile.write(detection_time)
+            timerfile.write(str(detection_time))
             timerfile.write("\n")
 
     return pred_annolist

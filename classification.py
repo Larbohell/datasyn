@@ -53,7 +53,7 @@ def classify(test_images, model_dir, input_image_dim):
 
     with open("timing_classification.txt", "a") as timerfile:
         classification_time = end_time - start_time
-        timerfile.write(classification_time)
+        timerfile.write(str(classification_time))
         timerfile.write("\n")
 
     return predicted

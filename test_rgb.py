@@ -8,8 +8,8 @@ import datetime
 import glob
 
 #MODEL_DIR = "BelgiumTS/2017_04_22_12.24_1001" #"BelgiumTS/2017_04_18_17.57"
-MODEL_DIR = "GTSRB/2017_04_23_11.58_101"
-TEST_DATA_SET = "BelgiumTS"
+MODEL_DIR = "GTSRB/2017_04_23_16.41_501"
+TEST_DATA_SET = "GTSRB"
 #TEST_DATA_SET = "GTSRB"
 #TEST_DATA_SET = "FromTensorBox/overfeat_rezoom_2017_04_18_23.35"
 

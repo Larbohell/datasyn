@@ -11,12 +11,16 @@ import datetime
 import subprocess
 import shutil
 import time
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+import json
 
 #import TensorBox/evaluate
 import classification
 import crop_image
 
-TEST_DATA_DIR = "datasets/detection/single_image"
+#TEST_DATA_DIR = "datasets/liveDemo"
+TEST_DATA_DIR = "datasets/Trondheim"
 LABEL_TYPE = "GTSRB"
 #LABEL_TYPE = "Belgium_TS"
 #LABEL_TYPE = "" # Prints numerical lable instead of text label
@@ -24,7 +28,6 @@ LABEL_TYPE = "GTSRB"
 #Detection paths and filenames
 DETECTION_MODEL_DIR = "trainedNetworks/TensorBoxNetworks/7500iter"
 JSON_FILE_PATH = DETECTION_MODEL_DIR + "/save.ckpt-7500.val_boxes.json"
-
 
 SAVE_CROPPED_IMG_PATH = DETECTION_MODEL_DIR + "/cropped_images"
 FILE_FORMAT = ".png" #The file format of the image(s) containing detected signs
@@ -42,8 +45,6 @@ IMAGE_SCALE_SIZE_X = 32
 IMAGE_SCALE_SIZE_Y = 32
 
 def main():
-    #image_name = "00023.ppm"
-    #image_name = "elgesetergate.png"
 
     i = 0
     for filename in glob.glob(TEST_DATA_DIR + "/*" + FILE_FORMAT):
@@ -51,6 +52,11 @@ def main():
         detect_and_classify(image_name, i)
         print("Detect and recognize iter = ", i)
         i += 1
+
+def display_image(image_path):
+    img = mpimg.imread(image_path)
+    imgplot = plt.imshow(img)
+    plt.show()
 
 def pre_process_single_img(img):
     img_y = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)[:,:,0]
@@ -64,12 +70,14 @@ def add_dimension(img):
 def detect_and_classify(image_name, iter):
     # Sign detection
     print("SIGN DETECTION")
+    display_image(TEST_DATA_DIR + "/" + image_name)
     bashCommand = "python TensorBox/detection.py --weights " + DETECTION_MODEL + " --image_dir " + EMPTY_JSON_FILE + " --image_name " + image_name
     # os.system(bashCommand)
 
     result = subprocess.run(bashCommand.split(), stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
 
+    display_image(DETECTION_MODEL_DIR + "/images_val_boxes_7500/" + image_name)
     print("SIGN DETECTION DONE\n")
 
     print("CROPPING IMAGES")
@@ -83,7 +91,8 @@ def detect_and_classify(image_name, iter):
 
     i = 0
     for image in cropped_images:
-        image.save(SAVE_CROPPED_IMG_PATH + "/cropped_image_" + str(i) + "_" + FILE_FORMAT)  # save image
+        cropped_image_name = "/cropped_image_" + str(i) + "_" + FILE_FORMAT
+        image.save(SAVE_CROPPED_IMG_PATH + cropped_image_name)  # save image
         i += 1
 
     print("CROPPING DONE\n")
@@ -104,7 +113,7 @@ def detect_and_classify(image_name, iter):
 
     with open("timing_processing.txt", "a") as timerfile:
         processing_time = end_time - start_time
-        timerfile.write(processing_time)
+        timerfile.write(str(processing_time))
         timerfile.write("\n")
 
     predicted_labels = classification.classify(sign_images_rescaled, CLASSIFICATION_MODEL_DIR, input_image_dimension)
@@ -117,6 +126,14 @@ def detect_and_classify(image_name, iter):
         os.makedirs(CLASSIFIED_IMAGES_SAVE_PATH)
 
     i = 0
+    json_file = open(JSON_FILE_PATH)
+    json_string = json_file.read()
+    json_data = json.loads(json_string)
+    image = json_data[0]
+    image_rects = image['rects']
+
+    orig_img = mpimg.imread(TEST_DATA_DIR + "/" + image_name)
+    imgplot = plt.imshow(orig_img)
 
     for pl in predicted_labels:
         predicted_image = sign_images_rescaled[i]
@@ -135,9 +152,18 @@ def detect_and_classify(image_name, iter):
 
         save_numpy_array_as_image(predicted_image_rgb, CLASSIFIED_IMAGES_SAVE_PATH, '/label_' + sign_type + '_' + str(i) + "_" + str(iter) + 'RGB.png')
 
+        x = image_rects[i]['x1']
+        y = image_rects[i]['y1']
+
+        plt.annotate(sign_type, xy = (x,y))
+
         i += 1
 
+    plt.show()
+
+
     print("SIGN RECOGNITION DONE")
+
 
     print("Preparing for next run and deleting cropped_images folder...")
     shutil.rmtree(SAVE_CROPPED_IMG_PATH)
